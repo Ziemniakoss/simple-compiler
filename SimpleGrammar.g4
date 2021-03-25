@@ -1,65 +1,61 @@
 grammar SimpleGrammar;
 
-program: command+;
+//program: command+;
 
-command
-	: variable_assigment
-	| conditional_statement
-//	| function_declaration
-	| variable_declaration
-//	| function_call;
-;
-variable_assigment: variable_name '=' value ';';
+instruction
+	: var_declaration ';'
+	| var_assigment ';'
+	| fun_call ';';
 
-variable_declaration: 'var' variable_name '=' value ';';
+var_declaration: type_declaration var_name '=' value;
+
+var_assigment: var_name '=' value;
+
+fun_declaration
+	: 'fun' var_name '(' ')' code_block
+	| 'fun' var_name '(' type_declaration var_name (',' type_declaration var_name)* ')' code_block;
+
+type_declaration: 'integer' | 'real';
+
+var_name: character+;
 
 value
-	: function_call
-	| integer
+	: integer
 	| real
-	| variable_name
-	| value aritmetic_operation value;
+	| var_name
+	| fun_call
+	| value aritmetic_operator value;
 
-aritmetic_operation
-	: '-'
-	| '+'
-	| '*'
-	| '/'
-	| '%';
+aritmetic_operator: '-' | '+' | '/' |'*';
 
-variable_name : character+;
+integer : digit+;
 
-real
-	: digit+ '.' digit+
-	| '-' digit+ '.' digit+;
-
-digit: '0' | '1' |'2' |'3' |'4'| '5'| '6' |'7' | '8' | '9' | '0';
-
-integer
-	: '-'? digit+;
-
-function_call
-	: variable_name '(' ')'
-	| variable_name '(' value ')'
-	| variable_name '(' value (',' value)+ ')';
-
-function_declaration
-	: 'fun' variable_name '(' function_parameters ')';
+real: integer '.' integer;
 
 
-//TODO
-function_parameters:;
+fun_call
+	: var_name '(' ')'
+	| var_name '(' value (',' value)* ')';
 
-conditional_statement
-	: if_statement else_if_statement* else_statement?;
+return_value: 'return_value' value? ;
 
-if_statement: 'if' value '{' command? '}';
+code_block
+	: '{' (instruction | return_value)* '}';
 
-else_if_statement: 'elif' value '{' command? '}';
+/*
+ *
+ * Fragmenty
+ *
+ */
 
-else_statement: 'else' '{' command? '}';
 
-code_block:;
+
+
+terminator: ';';
+
+l_bracket: '}';
+
+r_bracket: '{';
 
 character
 	: 'a'
@@ -85,6 +81,20 @@ character
 	| 'w'
 	| 'v'
 	| 'y'
-	| 'z';
+	| 'z'
+	| 'x';
+
+digit
+	: '0'
+	| '1'
+	| '2'
+	| '3'
+	| '4'
+	| '5'
+	| '6'
+	| '7'
+	| '8'
+	| '9'
+	| '0';
 
 WS : [ \t\r\n]+ -> skip ;
