@@ -1,100 +1,69 @@
 grammar SimpleGrammar;
 
-//program: command+;
+prog: funDeclaration+;
 
-instruction
-	: var_declaration ';'
-	| var_assigment ';'
-	| fun_call ';';
+If: 'if';
+Else: 'else';
+ElseIf: 'elIf';
+Fucntion: 'fun';
+Variable: 'var';
+LCurly: '{';
+RCurly: '}';
+LBracket: '(';
+RBracket: ')';
+CommandTerminator: ';';
+While: 'while';
+Return: 'return';
+Type: 'int' | 'real';
+Plus: '+';
+Minus: '-';
+Div: '/';
+Mod: '%';
+Mult: '*';
+Comma: ',';
+Assigment: '=';
+ArithmeticOperator: Plus | Minus | Div | Mod | Mult;
 
-var_declaration: type_declaration var_name '=' value;
 
-var_assigment: var_name '=' value;
+command
+	: varDeclaration
+	| varAssigment;
 
-fun_declaration
-	: 'fun' var_name '(' ')' code_block
-	| 'fun' var_name '(' type_declaration var_name (',' type_declaration var_name)* ')' code_block;
+ID: ('a'..'z'|'A'..'Z')+;
 
-type_declaration: 'integer' | 'real';
 
-var_name: character+;
+varDeclaration: Variable Type ID Assigment value CommandTerminator;
+
+varAssigment: ID Assigment value CommandTerminator;
 
 value
-	: integer
-	| real
-	| var_name
-	| fun_call
-	| value aritmetic_operator value;
+	: simpleValue ArithmeticOperator value
+	| simpleValue;
 
-aritmetic_operator: '-' | '+' | '/' |'*';
-
-integer : digit+;
-
-real: integer '.' integer;
+simpleValue
+	: ID
+	| functionCall
+	| Int;
 
 
-fun_call
-	: var_name '(' ')'
-	| var_name '(' value (',' value)* ')';
+functionCall: ID LBracket functionArguments RBracket;
 
-return_value: 'return_value' value? ;
+functionArguments: value (Comma value)*;
 
-code_block
-	: '{' (instruction | return_value)* '}';
+funParameter: Type ID;
 
-/*
- *
- * Fragmenty
- *
- */
+funDeclaration: Fucntion Type ID LBracket (funParameter (Comma funParameter)*)? RBracket LCurly command* RCurly;
 
+Int: Digit+;
+fragment
+Digit: '0'..'9';
 
+fragment
+Char: ('a'..'z'|'A'..'Z');
 
+fragment
+NewLine:	'\r'? '\n'
+;
 
-terminator: ';';
-
-l_bracket: '}';
-
-r_bracket: '{';
-
-character
-	: 'a'
-	| 'b'
-	| 'c'
-	| 'd'
-	| 'e'
-	| 'f'
-	| 'g'
-	| 'h'
-	| 'i'
-	| 'j'
-	| 'k'
-	| 'l'
-	| 'm'
-	| 'n'
-	| 'o'
-	| 'p'
-	| 'r'
-	| 's'
-	| 't'
-	| 'u'
-	| 'w'
-	| 'v'
-	| 'y'
-	| 'z'
-	| 'x';
-
-digit
-	: '0'
-	| '1'
-	| '2'
-	| '3'
-	| '4'
-	| '5'
-	| '6'
-	| '7'
-	| '8'
-	| '9'
-	| '0';
-
-WS : [ \t\r\n]+ -> skip ;
+WS:   (' '|'\t' | '\n')+ -> skip
+;
