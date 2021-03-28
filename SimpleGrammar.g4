@@ -2,6 +2,8 @@ grammar SimpleGrammar;
 
 prog: funDeclaration+;
 
+
+ArithmeticOperator: Plus | Minus | Div | Mod | Mult;
 If: 'if';
 Else: 'else';
 ElseIf: 'elIf';
@@ -22,39 +24,41 @@ Mod: '%';
 Mult: '*';
 Comma: ',';
 Assigment: '=';
-ArithmeticOperator: Plus | Minus | Div | Mod | Mult;
 
 
 command
 	: varDeclaration
-	| varAssigment;
+	| varAssigment
+	| functionCall CommandTerminator
+	| returnStatement;
 
 ID: ('a'..'z'|'A'..'Z')+;
 
+returnStatement: Return value CommandTerminator;
 
 varDeclaration: Variable Type ID Assigment value CommandTerminator;
 
 varAssigment: ID Assigment value CommandTerminator;
 
-value
-	: simpleValue ArithmeticOperator value
-	| simpleValue;
 
 simpleValue
 	: ID
 	| functionCall
 	| Int;
 
+value
+	: simpleValue (ArithmeticOperator value)?;
 
 functionCall: ID LBracket functionArguments RBracket;
 
-functionArguments: value (Comma value)*;
+functionArguments: (value (Comma value)*)?;
 
 funParameter: Type ID;
 
 funDeclaration: Fucntion Type ID LBracket (funParameter (Comma funParameter)*)? RBracket LCurly command* RCurly;
 
 Int: Digit+;
+
 fragment
 Digit: '0'..'9';
 

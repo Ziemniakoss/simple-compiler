@@ -1,3 +1,9 @@
-fun main() {
+fun int test() {
+	var int x = 10;
+	x = 20;
+}
 
+fun int main() {
+	test();
+	return 0 + 20 % 1;
 }
