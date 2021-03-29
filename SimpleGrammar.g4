@@ -1,7 +1,9 @@
 grammar SimpleGrammar;
 
+
 prog: funDeclaration+;
 
+type: IntType | RealType;
 
 ArithmeticOperator: Plus | Minus | Div | Mod | Mult;
 If: 'if';
@@ -13,10 +15,11 @@ LCurly: '{';
 RCurly: '}';
 LBracket: '(';
 RBracket: ')';
+IntType: 'int';
+RealType: 'real';
 CommandTerminator: ';';
 While: 'while';
 Return: 'return';
-Type: 'int' | 'real';
 Plus: '+';
 Minus: '-';
 Div: '/';
@@ -30,13 +33,16 @@ command
 	: varDeclaration
 	| varAssigment
 	| functionCall CommandTerminator
-	| returnStatement;
+	| returnStatement
+	| codeBlock;
+
+codeBlock: LCurly command* RCurly;
 
 ID: ('a'..'z'|'A'..'Z')+;
 
 returnStatement: Return value CommandTerminator;
 
-varDeclaration: Variable Type ID Assigment value CommandTerminator;
+varDeclaration: Variable type ID Assigment value CommandTerminator;
 
 varAssigment: ID Assigment value CommandTerminator;
 
@@ -53,9 +59,9 @@ functionCall: ID LBracket functionArguments RBracket;
 
 functionArguments: (value (Comma value)*)?;
 
-funParameter: Type ID;
+funParameter: type ID;
 
-funDeclaration: Fucntion Type ID LBracket (funParameter (Comma funParameter)*)? RBracket LCurly command* RCurly;
+funDeclaration: Fucntion type ID LBracket (funParameter (Comma funParameter)*)? RBracket codeBlock;
 
 Int: Digit+;
 
