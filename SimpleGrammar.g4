@@ -33,10 +33,9 @@ command
 	: varDeclaration
 	| varAssigment
 	| functionCall CommandTerminator
-	| returnStatement
-	| codeBlock;
+	| returnStatement;
 
-codeBlock: LCurly command* RCurly;
+codeBlock: LCurly (command|codeBlock)* RCurly;
 
 ID: ('a'..'z'|'A'..'Z')+;
 
@@ -50,7 +49,8 @@ varAssigment: ID Assigment value CommandTerminator;
 simpleValue
 	: ID
 	| functionCall
-	| Int;
+	| Int
+	| Real;
 
 value
 	: simpleValue (ArithmeticOperator value)?;
@@ -65,6 +65,8 @@ funDeclaration: Fucntion type ID LBracket (funParameter (Comma funParameter)*)? 
 
 Int: Digit+;
 
+Real: Digit+ '.' Digit+;
+
 fragment
 Digit: '0'..'9';
 
@@ -77,3 +79,7 @@ NewLine:	'\r'? '\n'
 
 WS:   (' '|'\t' | '\n')+ -> skip
 ;
+
+LineComment: '//' ~[\r\n]* -> skip;
+
+MultiLineComment: '/*' .*? '*/' -> skip;

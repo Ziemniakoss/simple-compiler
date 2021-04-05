@@ -1,3 +1,11 @@
 fun int test() {
-
+	var int x = 10;
+	{
+		var int y = 11;
+		y = 1;
+	}
+	{
+		var int yolo = 1;
+	}
+	//return x;
 }
