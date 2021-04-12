@@ -1,60 +1,30 @@
-package pl.ziemniakoss.simplecompiler;
+package pl.ziemniakoss.simplecompiler.llvmgeneration;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import pl.ziemniakoss.simplecompiler.Function;
+import pl.ziemniakoss.simplecompiler.Variable;
+import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
-	private static final String ioLibraryCode =
-			"@.str = private unnamed_addr constant [3 x i8] c\"%d \"\n" +
-					"@.str.1 = private unnamed_addr constant [3 x i8] c\"%f \"\n" +
-					"@.str.2 = private unnamed_addr constant [3 x i8] c\"%d \"\n" +
-					"@.str.3 = private unnamed_addr constant [3 x i8] c\"%f \"\n" +
-
-					"define dso_local i32 @readInt() #0 {\n" +
-					"	%1 = alloca i32\n" +
-					"	%2 = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i64 0, i64 0), i32* %1)\n" +
-					"	%3 = load i32, i32* %1\n" +
-					"	ret i32 %3\n" +
-					"}\n\n" +
-					"declare dso_local i32 @__isoc99_scanf(i8*, ...) #1\n\n" +
-
-					"define dso_local float @readFloat() #0 {\n" +
-					"	%1 = alloca float\n" +
-					"	%2 = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.1, i64 0, i64 0), float* %1)\n" +
-					"	%3 = load float, float* %1\n" +
-					"	ret float %3\n" +
-					"}\n\n" +
-					"define dso_local i32 @writeInt(i32 %0) #0 {\n" +
-					"	%2 = alloca i32\n" +
-					"	store i32 %0, i32* %2\n" +
-					"	%3 = load i32, i32* %2\n" +
-					"	%4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.2, i64 0, i64 0), i32 %3)\n" +
-					"	ret i32 %4" +
-					"}\n\n" +
-					"declare dso_local i32 @printf(i8*, ...) #1\n" +
-					"define dso_local i32 @writeReal(float %0) #0 {\n" +
-					"	%2 = alloca float\n" +
-					"	store float %0, float* %2\n" +
-					"	%3 = load float, float* %2\n" +
-					"	%4 = fpext float %3 to double\n" +
-					"	%5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.3, i64 0, i64 0), double %4)\n" +
-					"	ret i32 %5\n" +
-					"}\n\n";
-
 	private final Map<String, Function> functionNameToDefinition;
-	private final StringBuilder llvmCode = new StringBuilder(ioLibraryCode);
+	private final StringBuilder llvmCode = new StringBuilder();
 	private final Stack<Map<String, Variable>> contexts;
 	private int instructionIndex = 1;
 	private int indent = 0;
-	private OperationResult lastOperationResult;
-	private Map<SimpleGrammarParser.ValueContext, Integer> valueTokenToOperationWithValue = new HashMap<>();
-	private Map<SimpleGrammarParser.SimpleValueContext, Integer> simpleValueTokenToOperationWithValue = new HashMap<>();
+	private final Map<SimpleGrammarParser.ValueContext, Integer> valueTokenToOperationWithValue = new HashMap<>();
+	private final Map<SimpleGrammarParser.SimpleValueContext, Integer> simpleValueTokenToOperationWithValue = new HashMap<>();
+	private final Map<Integer, VariableType> operationIndexToStoredValueType = new HashMap<>();
 	private final ParseTree parseTree;
 
 	public LLVMCodeGenerator(ParseTree parseTree) {
@@ -73,9 +43,24 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		return llvmCode.toString();
 	}
 
-	public void generateLlvmCode() {
+	public void generateLlvmCode() throws IOException {
+		loadIoLibrary();
 		ParseTreeWalker treeWalker = new ParseTreeWalker();
 		treeWalker.walk(this, this.parseTree);
+	}
+
+	private void loadIoLibrary() throws IOException {
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		InputStream ioLibraryStream = classloader.getResourceAsStream("ioLibrary.ll");
+		if (ioLibraryStream == null) {
+			throw new RuntimeException("Could not load simple language IO library");
+		}
+
+		BufferedReader ioLibraryReader = new BufferedReader(new InputStreamReader(ioLibraryStream));
+		for (String line; (line = ioLibraryReader.readLine()) != null; ) {
+			llvmCode.append(line)
+					.append('\n');
+		}
 	}
 
 	@Override
@@ -102,17 +87,14 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	public void exitCodeBlock(SimpleGrammarParser.CodeBlockContext ctx) {
 		llvmCode.append("\t".repeat(--indent));
 		contexts.pop();
-		if (isGlobalContext()) {
-			llvmCode.append('}');
-		}
 	}
 
 	@Override
 	public void exitReturnStatement(SimpleGrammarParser.ReturnStatementContext ctx) {
-		llvmCode.append("ret ")
-				.append(lastOperationResult.getType())
-				.append(" %")
-				.append(lastOperationResult.getOperationNumber());
+		//llvmCode.append("ret ")
+		//		.append(lastOperationResult.getType())
+		//		.append(" %")
+		//		.append(lastOperationResult.getOperationNumber());
 	}
 
 	@Override
@@ -139,6 +121,18 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
+	public void exitSimpleValue(SimpleGrammarParser.SimpleValueContext ctx) {
+		if (ctx.Int() != null) {
+
+		} else if (ctx.Real() != null) {
+
+		} else if (ctx.ID() != null) {
+
+		}
+		super.exitSimpleValue(ctx);
+	}
+
+	@Override
 	public void enterFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		llvmCode.append("define dso_local ");
 		if (ctx.type().IntType() != null) {
@@ -157,11 +151,14 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	public void exitFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		instructionIndex = 1;
 		//TODO store value
+		llvmCode.append("\t".repeat(indent + 1))
+				.append("ret")
+				.append(ctx.type().IntType() != null ? " i32 0\n" : " float 0.0\n")
+				.append("}\n\n");
 	}
 
 	@Override
 	public void enterValue(SimpleGrammarParser.ValueContext ctx) {
-		System.out.println(ctx.getText());
 	}
 
 	@Override

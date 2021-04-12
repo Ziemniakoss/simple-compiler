@@ -1,12 +1,9 @@
-fun int aa(int x, int y, real z) {
-
-}
-
-fun real aa() {
-
-}
 fun int main() {
 	var int x = 10  20 +;
 	x = 1;
 	//return x;
+}
+
+fun real x() {
+
 }

@@ -1,3 +1,6 @@
 /.idea/
 /gen/
 /target/
+/code-examples/*.ll
+/code-examples/*.out
+/code-examples/*.exe
