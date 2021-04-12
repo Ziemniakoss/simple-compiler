@@ -1,5 +1,7 @@
 package pl.ziemniakoss.simplecompiler;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
@@ -51,9 +53,11 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	private int instructionIndex = 1;
 	private int indent = 0;
 	private OperationResult lastOperationResult;
+	private Map<SimpleGrammarParser.ValueContext, Integer> valueTokenToOperationWithValue = new HashMap<>();
+	private Map<SimpleGrammarParser.SimpleValueContext, Integer> simpleValueTokenToOperationWithValue = new HashMap<>();
+	private final ParseTree parseTree;
 
-
-	public LLVMCodeGenerator() {
+	public LLVMCodeGenerator(ParseTree parseTree) {
 		this.functionNameToDefinition = new HashMap<>();
 		functionNameToDefinition.put("readInt", new Function("readInt", VariableType.INTEGER, new VariableType[0]));
 		functionNameToDefinition.put("readReal", new Function("readReal", VariableType.REAL, new VariableType[0]));
@@ -61,12 +65,17 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		functionNameToDefinition.put("write", null);
 		functionNameToDefinition.put("writeInt", null);
 		functionNameToDefinition.put("writeReal", null);
-
+		this.parseTree = parseTree;
 		this.contexts = new Stack<>();
 	}
 
 	public String getLlvmCode() {
 		return llvmCode.toString();
+	}
+
+	public void generateLlvmCode() {
+		ParseTreeWalker treeWalker = new ParseTreeWalker();
+		treeWalker.walk(this, this.parseTree);
 	}
 
 	@Override
@@ -93,11 +102,9 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	public void exitCodeBlock(SimpleGrammarParser.CodeBlockContext ctx) {
 		llvmCode.append("\t".repeat(--indent));
 		contexts.pop();
-		System.out.println("Yes " + isGlobalContext());
 		if (isGlobalContext()) {
 			llvmCode.append('}');
 		}
-		System.out.println(indent);
 	}
 
 	@Override
@@ -127,11 +134,6 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
-	public void enterVarAssigment(SimpleGrammarParser.VarAssigmentContext ctx) {
-		super.enterVarAssigment(ctx);
-	}
-
-	@Override
 	public void enterFunctionCall(SimpleGrammarParser.FunctionCallContext ctx) {
 		super.enterFunctionCall(ctx);
 	}
@@ -155,6 +157,11 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	public void exitFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		instructionIndex = 1;
 		//TODO store value
+	}
+
+	@Override
+	public void enterValue(SimpleGrammarParser.ValueContext ctx) {
+		System.out.println(ctx.getText());
 	}
 
 	@Override

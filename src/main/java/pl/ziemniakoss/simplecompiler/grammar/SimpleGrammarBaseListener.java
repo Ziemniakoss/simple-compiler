@@ -40,6 +40,18 @@ public class SimpleGrammarBaseListener implements SimpleGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArithmeticOperator(SimpleGrammarParser.ArithmeticOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArithmeticOperator(SimpleGrammarParser.ArithmeticOperatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCommand(SimpleGrammarParser.CommandContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -143,6 +155,18 @@ public class SimpleGrammarBaseListener implements SimpleGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunctionArguments(SimpleGrammarParser.FunctionArgumentsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunParameters(SimpleGrammarParser.FunParametersContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunParameters(SimpleGrammarParser.FunParametersContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

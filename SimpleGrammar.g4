@@ -5,7 +5,7 @@ prog: funDeclaration+;
 
 type: IntType | RealType;
 
-ArithmeticOperator: Plus | Minus | Div | Mod | Mult;
+arithmeticOperator: Plus | Minus | Div | Mod | Mult;
 If: 'if';
 Else: 'else';
 ElseIf: 'elIf';
@@ -53,15 +53,17 @@ simpleValue
 	| Real;
 
 value
-	: simpleValue (ArithmeticOperator value)?;
+	: simpleValue (simpleValue | arithmeticOperator)*;
 
 functionCall: ID LBracket functionArguments RBracket;
 
 functionArguments: (value (Comma value)*)?;
 
+funParameters: funParameter (Comma funParameter)*;
+
 funParameter: type ID;
 
-funDeclaration: Fucntion type ID LBracket (funParameter (Comma funParameter)*)? RBracket codeBlock;
+funDeclaration: Fucntion type ID LBracket funParameters? RBracket codeBlock;
 
 Int: Digit+;
 

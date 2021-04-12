@@ -28,6 +28,16 @@ public interface SimpleGrammarListener extends ParseTreeListener {
 	 */
 	void exitType(SimpleGrammarParser.TypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#arithmeticOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterArithmeticOperator(SimpleGrammarParser.ArithmeticOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#arithmeticOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitArithmeticOperator(SimpleGrammarParser.ArithmeticOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SimpleGrammarParser#command}.
 	 * @param ctx the parse tree
 	 */
@@ -117,6 +127,16 @@ public interface SimpleGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionArguments(SimpleGrammarParser.FunctionArgumentsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#funParameters}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunParameters(SimpleGrammarParser.FunParametersContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#funParameters}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunParameters(SimpleGrammarParser.FunParametersContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SimpleGrammarParser#funParameter}.
 	 * @param ctx the parse tree
