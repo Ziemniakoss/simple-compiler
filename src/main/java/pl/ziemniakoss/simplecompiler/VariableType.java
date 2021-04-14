@@ -6,6 +6,6 @@ public enum VariableType {
 
 	@Override
 	public String toString() {
-		return this == INTEGER ? "i32" : "float";
+		return this == INTEGER ? "i32" : "double";
 	}
 }

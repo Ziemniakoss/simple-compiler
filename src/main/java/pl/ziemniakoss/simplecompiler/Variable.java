@@ -5,10 +5,18 @@ import java.util.Objects;
 public class Variable {
 	private final VariableType type;
 	private final String name;
+	private final int registerWithValue;
 
 	public Variable(VariableType type, String name) {
 		this.type = type;
 		this.name = name;
+		registerWithValue = -1;
+	}
+
+	public Variable(VariableType type, String name, int registerWithValue) {
+		this.type = type;
+		this.name = name;
+		this.registerWithValue = registerWithValue;
 	}
 
 	public VariableType getType() {
@@ -17,6 +25,10 @@ public class Variable {
 
 	public String getName() {
 		return name;
+	}
+
+	public int getRegisterWithValue() {
+		return registerWithValue;
 	}
 
 	@Override
