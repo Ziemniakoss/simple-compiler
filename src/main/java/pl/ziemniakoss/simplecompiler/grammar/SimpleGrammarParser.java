@@ -662,11 +662,6 @@ public class SimpleGrammarParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitValue(this);
 		}
-
-		@Override
-		public int hashCode() {
-			return 17 + 31 * start.getLine() + 19 * start.getCharPositionInLine();
-		}
 	}
 
 	public final ValueContext value() throws RecognitionException {

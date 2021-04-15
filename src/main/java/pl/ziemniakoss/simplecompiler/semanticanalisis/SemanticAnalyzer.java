@@ -37,15 +37,14 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 		variableContexts.pop();
 	}
 
-
 	@Override
 	public void enterVarDeclaration(SimpleGrammarParser.VarDeclarationContext ctx) {
 		String declaredVariableName = ctx.ID().toString();
 		if (doesVariableExist(declaredVariableName)) {
 			throw new VariableAlreadyDeclaredException(
-					ctx.getStart().getLine(),
-					ctx.getStart().getCharPositionInLine(),
-					"Variable with name " + declaredVariableName + " already exists in this context"
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Variable with name " + declaredVariableName + " already exists in this context"
 			);
 		}
 		var declaredVariableType = ctx.type().IntType() == null ? VariableType.INTEGER : VariableType.REAL;
@@ -58,9 +57,9 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 		String nameOfVariableToAssign = ctx.ID().toString();
 		if (!doesVariableExist(nameOfVariableToAssign)) {
 			throw new VariableDoesNotExistException(
-					ctx.getStart().getLine(),
-					ctx.getStart().getCharPositionInLine(),
-					"Variable " + nameOfVariableToAssign + " is not declared in current context"
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Variable " + nameOfVariableToAssign + " is not declared in current context"
 			);
 		}
 	}
@@ -71,9 +70,9 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 			String referencedVariableName = ctx.ID().toString();
 			if (!doesVariableExist(referencedVariableName)) {
 				throw new VariableDoesNotExistException(
-						ctx.getStart().getLine(),
-						ctx.getStart().getCharPositionInLine(),
-						"Variable " + referencedVariableName + " is not declared in current context"
+					ctx.getStart().getLine(),
+					ctx.getStart().getCharPositionInLine(),
+					"Variable " + referencedVariableName + " is not declared in current context"
 				);
 			}
 		}
@@ -89,9 +88,9 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 				SimpleGrammarParser.ArithmeticOperatorContext arithmeticOperator = (SimpleGrammarParser.ArithmeticOperatorContext) child;
 				if (reversePolishNotationStackDepth < 2) {
 					throw new ReversePolishNotationException(
-							arithmeticOperator.getStart().getLine(),
-							arithmeticOperator.getStart().getCharPositionInLine(),
-							"Operator Reverse Polish Notation needs 2 element on stack, found " + reversePolishNotationStackDepth
+						arithmeticOperator.getStart().getLine(),
+						arithmeticOperator.getStart().getCharPositionInLine(),
+						"Operator Reverse Polish Notation needs 2 element on stack, found " + reversePolishNotationStackDepth
 					);
 				}
 				reversePolishNotationStackDepth--;
@@ -100,9 +99,9 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 
 		if (reversePolishNotationStackDepth != 1) {
 			throw new ReversePolishNotationException(
-					ctx.getStop().getLine(),
-					ctx.getStop().getCharPositionInLine(),
-					"Variable stack after operations sholud have one value"
+				ctx.getStop().getLine(),
+				ctx.getStop().getCharPositionInLine(),
+				"Variable stack after operations sholud have one value"
 			);
 		}
 	}
@@ -112,18 +111,38 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 		String calledFunctionName = ctx.ID().toString();
 		if (!functionNameToFunction.containsKey(calledFunctionName)) {
 			throw new FunctionNotDeclaredException(
-					ctx.getStart().getLine(),
-					ctx.getStart().getCharPositionInLine(),
-					"Called function " + calledFunctionName + " is not declared"
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Called function " + calledFunctionName + " is not declared"
+			);
+		}
+		Function calledFunction = functionNameToFunction.get(calledFunctionName);
+		if(calledFunction == null) {
+			throw new IllegalArgumentException("No function with name " +calledFunctionName);
+		}
+		var nOfArgumentsPassed = ctx.functionArguments() != null && ctx.functionArguments().value() != null ? ctx.functionArguments().value().size() : 0;
+		if (nOfArgumentsPassed != calledFunction.getArgumentsTypes().length) {
+			throw new InvalidFunctionCallException(
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Function " + calledFunctionName +
+					" has " + calledFunction.getArgumentsTypes().length +
+					" arguments but received " + ctx.functionArguments().value().size()
 			);
 		}
 	}
+
 
 	@Override
 	public void exitProg(SimpleGrammarParser.ProgContext ctx) {
 		if (!functionNameToFunction.containsKey("main")) {
 			throw new MainMethodNotDefinedException("Main method is not defined");
 		}
+	}
+
+	@Override
+	public void exitFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
+		variableContexts.pop();
 	}
 
 	@Override
@@ -142,22 +161,34 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 		var declaredFunctionParametersTypesAsArray = declaredFunctionParametersTypes.toArray(VariableType[]::new);
 		var declaredFunction = new Function(declaredFunctionName, declaredFunctionReturnType, declaredFunctionParametersTypesAsArray);
 		functionNameToFunction.put(declaredFunctionName, declaredFunction);
-		super.enterFunDeclaration(ctx);
+
+		Map<String, Variable> contextWithFunctionParameters = new HashMap<>();
+		variableContexts.push(contextWithFunctionParameters);
+		if(ctx.funParameters() == null || ctx.funParameters().funParameter() == null) {
+			return;
+		}
+		for (var parameter : ctx.funParameters().funParameter()) {
+			Variable parsedParameter = new Variable(
+				parameter.type().IntType() != null ? VariableType.INTEGER : VariableType.REAL,
+				parameter.ID().toString()
+			);
+			contextWithFunctionParameters.put(parsedParameter.getName(), parsedParameter);
+		}
 	}
 
 	private void validateMainFunctionDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		if (ctx.type().IntType() == null) {
 			throw new InvalidMainDeclarationException(
-					ctx.getStart().getLine(),
-					ctx.getStart().getCharPositionInLine(),
-					"Main function must return integer"
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Main function must return integer"
 			);
 		}
 		if (ctx.funParameters() != null) {
 			throw new InvalidMainDeclarationException(
-					ctx.getStart().getLine(),
-					ctx.getStart().getCharPositionInLine(),
-					"Main function cant take any parameters"
+				ctx.getStart().getLine(),
+				ctx.getStart().getCharPositionInLine(),
+				"Main function cant take any parameters"
 			);
 		}
 	}
@@ -170,9 +201,9 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 			String parameterName = parameter.ID().toString();
 			if (declaredParametersNames.contains(parameterName)) {
 				throw new DuplicateParameterNamesException(
-						parameter.getStart().getLine(),
-						parameter.getStart().getCharPositionInLine(),
-						"Duplicate parameter name " + parameterName + " in function declaration "
+					parameter.getStart().getLine(),
+					parameter.getStart().getCharPositionInLine(),
+					"Duplicate parameter name " + parameterName + " in function declaration "
 				);
 			}
 			declaredParametersNames.add(parameterName);
@@ -182,9 +213,8 @@ public class SemanticAnalyzer extends SimpleGrammarBaseListener {
 	private void createDefaultContext() {
 		functionNameToFunction.put("readInt", new Function("readInt", VariableType.INTEGER, new VariableType[0]));
 		functionNameToFunction.put("readReal", new Function("readReal", VariableType.REAL, new VariableType[0]));
-		functionNameToFunction.put("write", null);
-		functionNameToFunction.put("writeInt", null);
-		functionNameToFunction.put("writeReal", null);
+		functionNameToFunction.put("writeInt", new Function("writeInd", VariableType.INTEGER, new VariableType[]{VariableType.INTEGER}));
+		functionNameToFunction.put("writeReal", new Function("writeReal", VariableType.INTEGER, new VariableType[]{VariableType.REAL}));
 
 		variableContexts.push(new HashMap<>());
 	}

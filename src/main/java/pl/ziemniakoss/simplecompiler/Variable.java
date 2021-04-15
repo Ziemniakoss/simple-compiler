@@ -6,17 +6,21 @@ public class Variable {
 	private final VariableType type;
 	private final String name;
 	private final int registerWithValue;
+	private final boolean pointer;
 
 	public Variable(VariableType type, String name) {
-		this.type = type;
-		this.name = name;
-		registerWithValue = -1;
+		this(type, name, -1);
 	}
 
 	public Variable(VariableType type, String name, int registerWithValue) {
+		this(type, name, registerWithValue, true);
+	}
+
+	public Variable(VariableType type, String name, int registerWithValue, boolean pointer) {
 		this.type = type;
 		this.name = name;
 		this.registerWithValue = registerWithValue;
+		this.pointer = pointer;
 	}
 
 	public VariableType getType() {
@@ -29,6 +33,10 @@ public class Variable {
 
 	public int getRegisterWithValue() {
 		return registerWithValue;
+	}
+
+	public boolean isPointer() {
+		return pointer;
 	}
 
 	@Override

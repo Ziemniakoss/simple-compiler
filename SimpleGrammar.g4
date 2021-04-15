@@ -65,9 +65,9 @@ funParameter: type ID;
 
 funDeclaration: Fucntion type ID LBracket funParameters? RBracket codeBlock;
 
-Int: Digit+;
+Int: Minus? Digit+;
 
-Real: Digit+ '.' Digit+;
+Real: Minus? Digit+ '.' Digit+;
 
 fragment
 Digit: '0'..'9';

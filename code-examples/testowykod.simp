@@ -1,9 +1,7 @@
-fun int main() {
-	var int x = 10.5  20.5 +;
-	var real y = 2 3 +;
-	return x;
+fun int sum(int x, int y) {
+	return x y +;
 }
 
-fun real x() {
-
+fun int main() {
+	writeInt(5.1 3 %);
 }

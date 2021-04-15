@@ -54,7 +54,7 @@ public class Compiler {
 		}
 
 		System.out.println("Compiling llvm...");
-		new ProcessBuilder("clang", "-o", getExecutableFileName(), getLlvmOutputFileName())
+		new ProcessBuilder("clang", "-lc",  "-O0","-o", getExecutableFileName(), getLlvmOutputFileName())
 				.inheritIO()
 				.start();
 	}
