@@ -2,12 +2,15 @@ fun int sum(int x, int y) {
 	return x y +;
 }
 
+/**
+ * Test of all arithmetic operations
+ */
 fun int main() {
-	var int firstOperand = 9;
-	var real secondOperand = 10;
-	var int result = sum(firstOperand, secondOperand);
-	writeInt(result);
-	writeReal(result);
-	var int input = readInt();
-	writeInt(input result *);
+	var real firstOperand = readReal();
+	var real secondOperand = readReal();
+	writeReal(firstOperand secondOperand +);
+	writeReal(firstOperand secondOperand -);
+	writeReal(firstOperand secondOperand *);
+	writeReal(firstOperand secondOperand /);
+	writeReal(firstOperand secondOperand %); // na intach
 }

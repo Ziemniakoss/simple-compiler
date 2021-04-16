@@ -377,9 +377,18 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		var firstOperandType = typesStack.pop();
 
 		VariableType operationExecutedOnType;
-		if (firstOperandType == secondOperandType) {
+		if (operationType == RpnOperationType.MOD) {
+			if (firstOperandType == VariableType.REAL) {
+				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, VariableType.REAL, VariableType.INTEGER);
+			}
+			if (secondOperandType == VariableType.REAL) {
+				secondOperandIndex = generateCastingLlvmCode(secondOperandIndex, VariableType.REAL, VariableType.INTEGER);
+			}
+			operationExecutedOnType = VariableType.INTEGER;
+
+		} else if (firstOperandType == secondOperandType) {
 			operationExecutedOnType = firstOperandType;
-		} else if(operationType != RpnOperationType.MOD){
+		} else  {
 			// Cast to real needed
 			if (firstOperandType != VariableType.REAL) {
 				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, firstOperandType, VariableType.REAL);
@@ -387,13 +396,6 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 				secondOperandIndex = generateCastingLlvmCode(secondOperandIndex, secondOperandType, VariableType.REAL);
 			}
 			operationExecutedOnType = VariableType.REAL;
-		} else {
-			if(firstOperandType == VariableType.REAL) {
-				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, VariableType.REAL, VariableType.INTEGER);
-			} else  if(secondOperandType == VariableType.REAL) {
-				secondOperandIndex = generateCastingLlvmCode(secondOperandIndex, VariableType.REAL, VariableType.INTEGER);
-			}
-			operationExecutedOnType = VariableType.INTEGER;
 		}
 		int operationWithResult = generateLlvmCodeForOperation(operationType, operationExecutedOnType, firstOperandIndex, secondOperandIndex);
 		valuesStack.push(operationWithResult);
