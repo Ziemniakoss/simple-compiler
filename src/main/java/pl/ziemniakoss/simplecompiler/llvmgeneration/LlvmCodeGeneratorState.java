@@ -13,8 +13,8 @@ public class LlvmCodeGeneratorState {
 	private final Map<String, Function> functionNameToDefinition = new HashMap<>();
 	private final StringBuilder llvmCode = new StringBuilder();
 	private final Stack<Map<String, Variable>> variableContexts = new Stack<>();
-	private int nextOperationIndex = 1;
-	private int indent = 0;
+	public int nextOperationIndex = 1;
+	public int indent = 0;
 	private final Map<ParserRuleContext, Integer> contextToOperationWithResult = new HashMap<>();
 	private final Map<Integer, VariableType> operationIndexToStoredValueType = new HashMap<>();
 	private VariableType currentlyDefinedFunctionReturnType;
@@ -27,6 +27,28 @@ public class LlvmCodeGeneratorState {
 		functionNameToDefinition.put("writeReal", new Function("writeReal", VariableType.INTEGER, new VariableType[]{VariableType.REAL}));
 	}
 
+
+	public boolean isVariableDefined(String variableName) {
+		for (var context : variableContexts) {
+			if (context.containsKey(variableName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Variable getVariable(String variableName) {
+		for (var context : variableContexts) {
+			if (context.containsKey((variableName))) {
+				return context.get(variableName);
+			}
+		}
+		return null;
+	}
+
+	public boolean isGlobalContext() {
+		return variableContexts.size() == 0;
+	}
 	public Map<String, Function> getFunctionNameToDefinition() {
 		return functionNameToDefinition;
 	}

@@ -9,11 +9,12 @@ import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Stack;
+
+import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.generateCastingLlvmCode;
+import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.genererateLlvmCodeForFunctionCall;
 
 public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	private final Map<String, Function> functionNameToDefinition;
@@ -43,7 +44,7 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		return llvmCode.toString();
 	}
 
-	public void generateLlvmCode() throws IOException {
+	public void generateLlvmCode() {
 		ParseTreeWalker treeWalker = new ParseTreeWalker();
 		treeWalker.walk(this, this.parseTree);
 	}
@@ -55,25 +56,20 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 
 	@Override
 	public void enterCommand(SimpleGrammarParser.CommandContext ctx) {
+
 		llvmCode.append("\t".repeat(indent));
 	}
 
 	@Override
 	public void exitCommand(SimpleGrammarParser.CommandContext ctx) {
 		if (ctx.functionCall() != null) {
-			genererateLlvmCodeForFunctionCall(ctx.functionCall());
+			genererateLlvmCodeForFunctionCall(state, ctx.functionCall());
 		}
 		llvmCode.append("\n");
 	}
 
 	@Override
 	public void enterCodeBlock(SimpleGrammarParser.CodeBlockContext ctx) {
-		llvmCode.append("\t".repeat(indent++));
-		if (isGlobalContext()) {
-			llvmCode.append('{');
-		}
-		llvmCode.append('\n');
-		contexts.push(new HashMap<>());
 	}
 
 	@Override
@@ -87,7 +83,7 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		int operationWithReturnedValue = valueTokenToOperationWithValue.get(ctx.value());
 		VariableType returnedType = operationIndexToStoredValueType.get(operationWithReturnedValue);
 		if (returnedType != currentlyDefinedFunctionReturnType) {
-			operationWithReturnedValue = generateCastingLlvmCode(operationWithReturnedValue, returnedType, currentlyDefinedFunctionReturnType);
+			operationWithReturnedValue = generateCastingLlvmCode(state, operationWithReturnedValue, returnedType, currentlyDefinedFunctionReturnType);
 		}
 		llvmCode.append("ret ")
 			.append(currentlyDefinedFunctionReturnType)
@@ -104,7 +100,7 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	public void enterVarDeclaration(SimpleGrammarParser.VarDeclarationContext ctx) {
 		var variableType = ctx.type();
 		var variableName = ctx.ID().toString();
-		if (isVariableDefined(variableName)) {
+		if (state.isVariableDefined(variableName)) {
 			throw new RuntimeException("Variable \"" + variableName + "\" already defined");
 		}
 		llvmCode.append('\n')
@@ -128,9 +124,9 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		int operationWithValueForVariable = valueTokenToOperationWithValue.get(ctx.value());
 		var valueTypeForDeclaredVariable = operationIndexToStoredValueType.get(operationWithValueForVariable);
 		String declaredVariableName = ctx.ID().toString();
-		var declaredVariable = getVariable(declaredVariableName);
+		var declaredVariable = state.getVariable(declaredVariableName);
 		if (valueTypeForDeclaredVariable != declaredVariable.getType()) {
-			operationWithValueForVariable = generateCastingLlvmCode(operationWithValueForVariable, valueTypeForDeclaredVariable, declaredVariable.getType());
+			operationWithValueForVariable = generateCastingLlvmCode(state, operationWithValueForVariable, valueTypeForDeclaredVariable, declaredVariable.getType());
 
 		}
 		llvmCode.append("store ")
@@ -146,99 +142,9 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 
 	@Override
 	public void exitSimpleValue(SimpleGrammarParser.SimpleValueContext ctx) {
-		if (ctx.ID() != null) {
-			var usedVariable = getVariable(ctx.ID().toString());
-			if (usedVariable.isPointer()) {
-				llvmCode.append('%')
-					.append(nextOperationIndex)
-					.append(" = load ")
-					.append(usedVariable.getType().toString())
-					.append(", ")
-					.append(usedVariable.getType().toString())
-					.append("* %")
-					.append(usedVariable.getRegisterWithValue())
-					.append('\n')
-					.append("\t".repeat(indent));
-				simpleValueTokenToOperationWithValue.put(ctx, nextOperationIndex);
-				operationIndexToStoredValueType.put(nextOperationIndex++, usedVariable.getType());
 
-			} else {
-				simpleValueTokenToOperationWithValue.put(ctx, usedVariable.getRegisterWithValue());
-			}
-		} else if (ctx.Int() != null || ctx.Real() != null) {
-			var variableType = ctx.Int() != null ? VariableType.INTEGER : VariableType.REAL;
-			var valueAsString = ctx.Int() != null ? ctx.Int().getText() : ctx.Real().getText();
-			llvmCode.append('%')
-				.append(nextOperationIndex)
-				.append(" = alloca ")
-				.append(variableType.toString())
-				.append("\n")
-				.append("\t".repeat(indent));
-
-			llvmCode.append("store ")
-				.append(variableType.toString())
-				.append(' ')
-				.append(valueAsString)
-				.append(", ").append(variableType.toString())
-				.append("*  %")
-				.append(nextOperationIndex)
-				.append('\n')
-				.append("\t".repeat(indent));
-
-			llvmCode.append('%')
-				.append(nextOperationIndex + 1)
-				.append(" = load ")
-				.append(variableType.toString())
-				.append(", ")
-				.append(variableType.toString())
-				.append("* %")
-				.append(nextOperationIndex)
-				.append('\n')
-				.append("\t".repeat(indent));
-			simpleValueTokenToOperationWithValue.put(ctx, ++nextOperationIndex);
-			operationIndexToStoredValueType.put(nextOperationIndex++, variableType);
-		} else {
-			int operationWithFunctionCallResult = genererateLlvmCodeForFunctionCall(ctx.functionCall());
-			simpleValueTokenToOperationWithValue.put(ctx, operationWithFunctionCallResult);
-			Function calledFunction = functionNameToDefinition.get(ctx.functionCall().ID().toString());
-			operationIndexToStoredValueType.put(operationWithFunctionCallResult, calledFunction.getReturnType());
-		}
 	}
 
-	private int genererateLlvmCodeForFunctionCall(SimpleGrammarParser.FunctionCallContext ctx) {
-		String calledFunctionName = ctx.ID().toString();
-		Function calledFunction = functionNameToDefinition.get(calledFunctionName);
-		LinkedList<Integer> operationsWithFunctionArgments = new LinkedList<>();
-		var passedFunctionArguments = ctx.functionArguments().value();
-		for (int i = 0; i < passedFunctionArguments.size(); i++) {
-			var functionParameter = calledFunction.getArgumentsTypes()[i];
-			var passedArgument = passedFunctionArguments.get(i);
-			var operationWithPassedArgument = valueTokenToOperationWithValue.get(passedArgument);
-			var passedArgumentType = operationIndexToStoredValueType.get(operationWithPassedArgument);
-			if (passedArgumentType != functionParameter) {
-				operationWithPassedArgument = generateCastingLlvmCode(operationWithPassedArgument, passedArgumentType, functionParameter);
-			}
-			operationsWithFunctionArgments.push(operationWithPassedArgument);
-		}
-		llvmCode.append('%')
-			.append(nextOperationIndex)
-			.append(" = call ")
-			.append(calledFunction.getReturnType())
-			.append(" @")
-			.append(calledFunction.getName())
-			.append('(');
-		for (int i = 0; i < calledFunction.getArgumentsTypes().length; i++) {
-			if (i != 0) {
-				llvmCode.append(", ");
-			}
-			llvmCode.append(calledFunction.getArgumentsTypes()[i])
-				.append(" %")
-				.append(operationsWithFunctionArgments.get(i));
-		}
-		llvmCode.append(")\n")
-			.append("\t".repeat(indent));
-		return nextOperationIndex++;
-	}
 
 	@Override
 	public void enterFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
@@ -341,9 +247,9 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		int operationWithValue = valueTokenToOperationWithValue.get(ctx.value());
 		var assignedValueType = operationIndexToStoredValueType.get(operationWithValue);
 		var variableName = ctx.ID().toString();
-		var variable = getVariable(variableName);
+		var variable = state.getVariable(variableName);
 		if (variable.getType() != assignedValueType) {
-			operationWithValue = generateCastingLlvmCode(operationWithValue, assignedValueType, variable.getType());
+			operationWithValue = generateCastingLlvmCode(state, operationWithValue, assignedValueType, variable.getType());
 		}
 		llvmCode.append('\n')
 			.append("\t".repeat(indent))
@@ -367,10 +273,10 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		VariableType operationExecutedOnType;
 		if (operationType == RpnOperationType.MOD) {
 			if (firstOperandType == VariableType.REAL) {
-				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, VariableType.REAL, VariableType.INTEGER);
+				firstOperandIndex = generateCastingLlvmCode(state, firstOperandIndex, VariableType.REAL, VariableType.INTEGER);
 			}
 			if (secondOperandType == VariableType.REAL) {
-				secondOperandIndex = generateCastingLlvmCode(secondOperandIndex, VariableType.REAL, VariableType.INTEGER);
+				secondOperandIndex = generateCastingLlvmCode(state, secondOperandIndex, VariableType.REAL, VariableType.INTEGER);
 			}
 			operationExecutedOnType = VariableType.INTEGER;
 
@@ -379,34 +285,15 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 		} else {
 			// Cast to real needed
 			if (firstOperandType != VariableType.REAL) {
-				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, firstOperandType, VariableType.REAL);
+				firstOperandIndex = generateCastingLlvmCode(state, firstOperandIndex, firstOperandType, VariableType.REAL);
 			} else if (secondOperandType != VariableType.REAL) {
-				secondOperandIndex = generateCastingLlvmCode(secondOperandIndex, secondOperandType, VariableType.REAL);
+				secondOperandIndex = generateCastingLlvmCode(state, secondOperandIndex, secondOperandType, VariableType.REAL);
 			}
 			operationExecutedOnType = VariableType.REAL;
 		}
 		int operationWithResult = generateLlvmCodeForOperation(operationType, operationExecutedOnType, firstOperandIndex, secondOperandIndex);
 		valuesStack.push(operationWithResult);
 		typesStack.push(operationExecutedOnType);
-	}
-
-	private int generateCastingLlvmCode(int operationToCast, VariableType from, VariableType to) {
-		var castingInstruction = from == VariableType.INTEGER ? "sitofp" : "fptoui";
-		llvmCode.append('\n')
-			.append("\t".repeat(indent))
-			.append('%')
-			.append(nextOperationIndex)
-			.append(" = ")
-			.append(castingInstruction)
-			.append(' ')
-			.append(from)
-			.append(" %")
-			.append(operationToCast)
-			.append(" to ")
-			.append(to)
-			.append('\n')
-			.append("\t".repeat(indent));
-		return nextOperationIndex++;
 	}
 
 	/**
@@ -445,27 +332,5 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	@Override
 	public String toString() {
 		return getLlvmCode();
-	}
-
-	private boolean isVariableDefined(String variableName) {
-		for (var context : contexts) {
-			if (context.containsKey(variableName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Variable getVariable(String variableName) {
-		for (var context : contexts) {
-			if (context.containsKey((variableName))) {
-				return context.get(variableName);
-			}
-		}
-		return null;
-	}
-
-	private boolean isGlobalContext() {
-		return contexts.size() == 0;
 	}
 }
