@@ -3,5 +3,11 @@ fun int sum(int x, int y) {
 }
 
 fun int main() {
-	writeInt(5.1 3 %);
+	var int firstOperand = 9;
+	var real secondOperand = 10;
+	var int result = sum(firstOperand, secondOperand);
+	writeInt(result);
+	writeReal(result);
+	var int input = readInt();
+	writeInt(input result *);
 }

@@ -1,7 +1,7 @@
 grammar SimpleGrammar;
 
 
-prog: funDeclaration+;
+prog: funDeclaration+ EOF;
 
 type: IntType | RealType;
 
