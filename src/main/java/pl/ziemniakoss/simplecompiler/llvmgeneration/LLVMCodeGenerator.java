@@ -9,10 +9,7 @@ import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -29,6 +26,7 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	private final Map<Integer, VariableType> operationIndexToStoredValueType = new HashMap<>();
 	private final ParseTree parseTree;
 	private VariableType currentlyDefinedFunctionReturnType;
+	private final LlvmCodeGeneratorState state = new LlvmCodeGeneratorState();
 
 	public LLVMCodeGenerator(ParseTree parseTree) {
 		this.functionNameToDefinition = new HashMap<>();
@@ -46,23 +44,13 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	public void generateLlvmCode() throws IOException {
-		loadIoLibrary();
 		ParseTreeWalker treeWalker = new ParseTreeWalker();
 		treeWalker.walk(this, this.parseTree);
 	}
 
-	private void loadIoLibrary() throws IOException {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		InputStream ioLibraryStream = classloader.getResourceAsStream("ioLibrary.ll");
-		if (ioLibraryStream == null) {
-			throw new RuntimeException("Could not load simple language IO library");
-		}
-
-		BufferedReader ioLibraryReader = new BufferedReader(new InputStreamReader(ioLibraryStream));
-		for (String line; (line = ioLibraryReader.readLine()) != null; ) {
-			llvmCode.append(line)
-				.append('\n');
-		}
+	@Override
+	public void enterProg(SimpleGrammarParser.ProgContext ctx) {
+		new EnterProgHandler().handle(state, ctx);
 	}
 
 	@Override
@@ -388,7 +376,7 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 
 		} else if (firstOperandType == secondOperandType) {
 			operationExecutedOnType = firstOperandType;
-		} else  {
+		} else {
 			// Cast to real needed
 			if (firstOperandType != VariableType.REAL) {
 				firstOperandIndex = generateCastingLlvmCode(firstOperandIndex, firstOperandType, VariableType.REAL);
