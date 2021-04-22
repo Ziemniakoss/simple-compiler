@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import pl.ziemniakoss.simplecompiler.Function;
 import pl.ziemniakoss.simplecompiler.Variable;
 import pl.ziemniakoss.simplecompiler.VariableType;
+import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,12 @@ public class LlvmCodeGeneratorState {
 	public int nextOperationIndex = 1;
 	public int indent = 0;
 	private final Map<ParserRuleContext, Integer> contextToOperationWithResult = new HashMap<>();
+	private final Map<SimpleGrammarParser.ValueContext, Double> valueContextToPrecalculatedValue = new HashMap<>();
+
+	public Map<SimpleGrammarParser.ValueContext, Double> getValueContextToPrecalculatedValue() {
+		return valueContextToPrecalculatedValue;
+	}
+
 	private final Map<Integer, VariableType> operationIndexToStoredValueType = new HashMap<>();
 	private VariableType currentlyDefinedFunctionReturnType;
 
@@ -49,20 +56,13 @@ public class LlvmCodeGeneratorState {
 	public boolean isGlobalContext() {
 		return variableContexts.size() == 0;
 	}
+
 	public Map<String, Function> getFunctionNameToDefinition() {
 		return functionNameToDefinition;
 	}
 
 	public StringBuilder getLlvmCode() {
 		return llvmCode;
-	}
-
-	public int getNextOperationIndex() {
-		return nextOperationIndex;
-	}
-
-	public void setNextOperationIndex(int nextOperationIndex) {
-		this.nextOperationIndex = nextOperationIndex;
 	}
 
 	public int getIndent() {

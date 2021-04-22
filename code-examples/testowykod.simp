@@ -8,9 +8,9 @@ fun int sum(int x, int y) {
 fun int main() {
 	var real firstOperand = readReal();
 	var real secondOperand = readReal();
-	writeReal(firstOperand secondOperand +);
-	writeReal(firstOperand secondOperand -);
-	writeReal(firstOperand secondOperand *);
-	writeReal(firstOperand secondOperand /);
-	writeReal(firstOperand secondOperand %); // na intach
+	//writeReal(firstOperand secondOperand +);
+	//writeReal(firstOperand secondOperand -);
+	//writeReal(firstOperand secondOperand *);
+	//writeReal(firstOperand secondOperand /);
+	writeReal(10 20 %); // na intach
 }

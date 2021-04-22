@@ -1,6 +1,7 @@
 package pl.ziemniakoss.simplecompiler.llvmgeneration;
 
 import pl.ziemniakoss.simplecompiler.RpnOperationType;
+import pl.ziemniakoss.simplecompiler.Variable;
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
@@ -11,7 +12,30 @@ import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUti
 public class ExitValueHandler implements IExitContextHandler<SimpleGrammarParser.ValueContext> {
 	@Override
 	public void handle(LlvmCodeGeneratorState state, SimpleGrammarParser.ValueContext ctx) {
-		Stack<Integer> operatorsOfValues = new Stack<>();
+		Stack<RpnOperand> operandsStack = new Stack<>();
+
+		for (var child : ctx.children) {
+			if (child instanceof SimpleGrammarParser.ArithmeticOperatorContext) {
+				var arithmeticCtx = (SimpleGrammarParser.ArithmeticOperatorContext) child;
+				if (arithmeticCtx.Mod() != null) {
+					handleRpnModuloOperation(operandsStack, state);
+				} else {
+					//TODO
+					//handleRpnNonModuloOperation(operandsStack, state, getRpnOperationForContext(arithmeticCtx));
+				}
+			} else {
+				var simpleValueContext = (SimpleGrammarParser.SimpleValueContext) child;
+				operandsStack.push(convertSimpleValueContextToRpnOperand(simpleValueContext, state));
+			}
+		}
+		RpnOperand result = operandsStack.pop();
+		if(result instanceof NumberOperand) {
+			state.getValueContextToPrecalculatedValue().put(ctx, ((NumberOperand) result).getValue());
+		} else {
+			state.getContextToOperationWithResult().put(ctx, result.getValueStoredInOperation());
+			state.getOperationIndexToStoredValueType().put(result.getValueStoredInOperation(), result.getOperandType());
+		}
+	/*Stack<Integer> operatorsOfValues = new Stack<>();
 		Stack<VariableType> valueType = new Stack<>();
 
 		for (var child : ctx.children) {
@@ -38,8 +62,95 @@ public class ExitValueHandler implements IExitContextHandler<SimpleGrammarParser
 			}
 		}
 		state.getContextToOperationWithResult().put(ctx, operatorsOfValues.peek());
-		state.getOperationIndexToStoredValueType().put(operatorsOfValues.pop(), valueType.pop());
+		state.getOperationIndexToStoredValueType().put(operatorsOfValues.pop(), valueType.pop());*/
+
 	}
+
+	private RpnOperand convertSimpleValueContextToRpnOperand(SimpleGrammarParser.SimpleValueContext ctx, LlvmCodeGeneratorState state) {
+		if (ctx.ID() != null) {
+			var variable = state.getVariable(ctx.ID().toString());
+			return new VariableOperand(variable.getType(), ctx, variable);
+		} else if (ctx.functionCall() != null) {
+			var function = state.getFunctionNameToDefinition().get(ctx.functionCall().ID().toString());
+			return new RpnOperand(function.getReturnType(), ctx, state.getContextToOperationWithResult().get(ctx));
+		} else if (ctx.Int() != null) {
+			return new IntegerNumberOperand(ctx);
+		} else {
+			return new RealNumberOperand(ctx);
+		}
+	}
+
+	private RpnOperationType getRpnOperationForContext(SimpleGrammarParser.ArithmeticOperatorContext ctx) {
+		if (ctx.Plus() != null) {
+			return RpnOperationType.ADD;
+		} else if (ctx.Minus() != null) {
+			return RpnOperationType.SUB;
+		} else if (ctx.Div() != null) {
+			return RpnOperationType.DIV;
+		} else if (ctx.Mult() != null) {
+			return RpnOperationType.MUL;
+		} else {
+			return RpnOperationType.MOD;
+		}
+	}
+
+	private void handleRpnModuloOperation(Stack<RpnOperand> operandsStack, LlvmCodeGeneratorState state) {
+		RpnOperand secondOperand = operandsStack.pop();
+		RpnOperand firstOperand = operandsStack.pop();
+		if (firstOperand instanceof NumberOperand && secondOperand instanceof NumberOperand) {
+			int firstOperandValue = (int) ((NumberOperand) firstOperand).getValue();
+			int secondOperandValue = (int) ((NumberOperand) secondOperand).getValue();
+			int result = firstOperandValue % secondOperandValue;
+			operandsStack.push(new IntegerNumberOperand(result));
+			return;
+		}
+		String operationWithFirstOperandValueAsString;
+		String operationWithSecondOperandValueAsString;
+		if (firstOperand instanceof NumberOperand) {
+			int operationWithSecondOperandValue = secondOperand.getValueStoredInOperation();
+			if (secondOperand.getOperandType() != VariableType.INTEGER) {
+				operationWithSecondOperandValue = generateCastingLlvmCode(state, operationWithSecondOperandValue, VariableType.REAL, VariableType.INTEGER);
+			}
+			operationWithSecondOperandValueAsString = "%" + operationWithSecondOperandValue;
+			operationWithFirstOperandValueAsString = "" + ((int) ((NumberOperand) firstOperand).getValue());
+		} else if (secondOperand instanceof NumberOperand) {
+			int operationWitFirstOperandValue = firstOperand.getValueStoredInOperation();
+			if(firstOperand.getOperandType() != VariableType.INTEGER) {
+				operationWitFirstOperandValue = generateCastingLlvmCode(state, operationWitFirstOperandValue, VariableType.REAL, VariableType.INTEGER);
+			}
+			operationWithFirstOperandValueAsString = "%" + operationWitFirstOperandValue;
+			operationWithSecondOperandValueAsString = "" + ((int) ((NumberOperand) secondOperand).getValue());
+		} else {
+			int operationWithFirstOperandValue = firstOperand.getValueStoredInOperation();
+			if(firstOperand.getOperandType() != VariableType.INTEGER) {
+				operationWithFirstOperandValue = generateCastingLlvmCode(state, operationWithFirstOperandValue, VariableType.REAL, VariableType.INTEGER);
+			}
+			int operationWithSecondOperandValue = secondOperand.getValueStoredInOperation();
+			if(secondOperand.getOperandType() != VariableType.INTEGER) {
+				operationWithSecondOperandValue = generateCastingLlvmCode(state, operationWithSecondOperandValue, VariableType.REAL, VariableType.INTEGER);
+			}
+			operationWithFirstOperandValueAsString = "%" + operationWithFirstOperandValue;
+			operationWithSecondOperandValueAsString = "%" + operationWithSecondOperandValue;
+		}
+		state.getLlvmCode().append('\n')
+			.append("\t".repeat(state.indent))
+			.append('%')
+			.append(state.nextOperationIndex)
+			.append(" = srem i32 ")
+			.append(operationWithFirstOperandValueAsString)
+			.append(", ")
+			.append(operationWithSecondOperandValueAsString);
+	}
+
+	private double getParsedDouble(SimpleGrammarParser.SimpleValueContext ctx) {
+		if (ctx.Int() != null) {
+			return Double.parseDouble(ctx.Int().toString());
+		} else if (ctx.Real() != null) {
+			return Double.parseDouble(ctx.Real().toString());
+		}
+		throw new IllegalArgumentException("ctx should have int or real");
+	}
+	//TODO remove
 
 	private void generateRpnOperationCode(Stack<Integer> valuesStack, Stack<VariableType> typesStack, RpnOperationType operationType, LlvmCodeGeneratorState state) {
 		int secondOperandIndex = valuesStack.pop();
@@ -104,5 +215,82 @@ public class ExitValueHandler implements IExitContextHandler<SimpleGrammarParser
 			.append('\n')
 			.append("\t".repeat(state.indent));
 		return state.nextOperationIndex++;
+	}
+}
+
+class RpnOperand {
+	private final VariableType operandType;
+
+	private final int valueStoredInOperation;
+
+	private final SimpleGrammarParser.SimpleValueContext ctx;
+
+	RpnOperand(VariableType operandType, SimpleGrammarParser.SimpleValueContext ctx) {
+		this(operandType, ctx, -1);
+	}
+
+	RpnOperand(VariableType operandType, SimpleGrammarParser.SimpleValueContext ctx, int valueStoredInOperation) {
+		this.operandType = operandType;
+		this.ctx = ctx;
+		this.valueStoredInOperation = valueStoredInOperation;
+	}
+
+	public VariableType getOperandType() {
+		return operandType;
+	}
+
+	public int getValueStoredInOperation() {
+		return valueStoredInOperation;
+	}
+
+	public SimpleGrammarParser.SimpleValueContext getCtx() {
+		return ctx;
+	}
+}
+
+class VariableOperand extends RpnOperand {
+	private final Variable variable;
+
+	public VariableOperand(VariableType operandType, SimpleGrammarParser.SimpleValueContext ctx, Variable variable) {
+		super(operandType, ctx, variable.getRegisterWithValue());
+		this.variable = variable;
+	}
+
+	public Variable getVariable() {
+		return variable;
+	}
+}
+
+abstract class NumberOperand extends RpnOperand {
+	private final double value;
+
+	public double getValue() {
+		return value;
+	}
+
+	NumberOperand(VariableType operandType, SimpleGrammarParser.SimpleValueContext ctx, double value) {
+		super(operandType, ctx);
+		this.value = value;
+	}
+}
+
+class RealNumberOperand extends NumberOperand {
+	RealNumberOperand(SimpleGrammarParser.SimpleValueContext ctx) {
+		super(VariableType.REAL, ctx, Double.parseDouble(ctx.Real().toString()));
+	}
+
+	RealNumberOperand(double value) {
+		super(VariableType.REAL, null, value);
+	}
+}
+
+class IntegerNumberOperand extends NumberOperand {
+	IntegerNumberOperand(SimpleGrammarParser.SimpleValueContext ctx) {
+		super(VariableType.INTEGER, ctx, Double.parseDouble(ctx.Int().toString()));
+	}
+
+	IntegerNumberOperand(int value) {
+		super(VariableType.INTEGER, null, value);
+
 	}
 }
