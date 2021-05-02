@@ -6,9 +6,19 @@ prog: funDeclaration+ EOF;
 type: IntType | RealType;
 
 arithmeticOperator: Plus | Minus | Div | Mod | Mult;
+
+valueComparison: value valueComparator value;
+
+valueComparator: GreaterOrEqual | SmallerOrEqual | Smaller | Greater | Equal;
+
 If: 'if';
 Else: 'else';
-ElseIf: 'elIf';
+ElseIf: 'elif';
+GreaterOrEqual: '>=';
+SmallerOrEqual: '<=';
+Smaller: '<';
+Greater: '>';
+Equal: '==';
 Fucntion: 'fun';
 Variable: 'var';
 LCurly: '{';
@@ -33,7 +43,16 @@ command
 	: varDeclaration
 	| varAssigment
 	| functionCall CommandTerminator
-	| returnStatement;
+	| returnStatement
+	| conditionalStatement;
+
+conditionalStatement: ifStatement elseIfStatement* elseStatement?;
+
+ifStatement: If LBracket valueComparison RBracket codeBlock;
+
+elseStatement: Else codeBlock;
+
+elseIfStatement: ElseIf LBracket valueComparison RBracket codeBlock;
 
 codeBlock: LCurly (command|codeBlock)* RCurly;
 

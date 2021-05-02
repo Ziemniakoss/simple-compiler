@@ -38,6 +38,26 @@ public interface SimpleGrammarListener extends ParseTreeListener {
 	 */
 	void exitArithmeticOperator(SimpleGrammarParser.ArithmeticOperatorContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#valueComparison}.
+	 * @param ctx the parse tree
+	 */
+	void enterValueComparison(SimpleGrammarParser.ValueComparisonContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#valueComparison}.
+	 * @param ctx the parse tree
+	 */
+	void exitValueComparison(SimpleGrammarParser.ValueComparisonContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#valueComparator}.
+	 * @param ctx the parse tree
+	 */
+	void enterValueComparator(SimpleGrammarParser.ValueComparatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#valueComparator}.
+	 * @param ctx the parse tree
+	 */
+	void exitValueComparator(SimpleGrammarParser.ValueComparatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SimpleGrammarParser#command}.
 	 * @param ctx the parse tree
 	 */
@@ -47,6 +67,46 @@ public interface SimpleGrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCommand(SimpleGrammarParser.CommandContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#conditionalStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#conditionalStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStatement(SimpleGrammarParser.IfStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#ifStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStatement(SimpleGrammarParser.IfStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseStatement(SimpleGrammarParser.ElseStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#elseStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseStatement(SimpleGrammarParser.ElseStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#elseIfStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#elseIfStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SimpleGrammarParser#codeBlock}.
 	 * @param ctx the parse tree

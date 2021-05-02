@@ -20,39 +20,45 @@ public class SimpleGrammarParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		If=1, Else=2, ElseIf=3, Fucntion=4, Variable=5, LCurly=6, RCurly=7, LBracket=8, 
-		RBracket=9, IntType=10, RealType=11, CommandTerminator=12, While=13, Return=14, 
-		Plus=15, Minus=16, Div=17, Mod=18, Mult=19, Comma=20, Assigment=21, ID=22, 
-		Int=23, Real=24, WS=25, LineComment=26, MultiLineComment=27;
+		If=1, Else=2, ElseIf=3, GreaterOrEqual=4, SmallerOrEqual=5, Smaller=6, 
+		Greater=7, Equal=8, Fucntion=9, Variable=10, LCurly=11, RCurly=12, LBracket=13, 
+		RBracket=14, IntType=15, RealType=16, CommandTerminator=17, While=18, 
+		Return=19, Plus=20, Minus=21, Div=22, Mod=23, Mult=24, Comma=25, Assigment=26, 
+		ID=27, Int=28, Real=29, WS=30, LineComment=31, MultiLineComment=32;
 	public static final int
-		RULE_prog = 0, RULE_type = 1, RULE_arithmeticOperator = 2, RULE_command = 3, 
-		RULE_codeBlock = 4, RULE_returnStatement = 5, RULE_varDeclaration = 6, 
-		RULE_varAssigment = 7, RULE_simpleValue = 8, RULE_value = 9, RULE_functionCall = 10, 
-		RULE_functionArguments = 11, RULE_funParameters = 12, RULE_funParameter = 13, 
-		RULE_funDeclaration = 14;
+		RULE_prog = 0, RULE_type = 1, RULE_arithmeticOperator = 2, RULE_valueComparison = 3, 
+		RULE_valueComparator = 4, RULE_command = 5, RULE_conditionalStatement = 6, 
+		RULE_ifStatement = 7, RULE_elseStatement = 8, RULE_elseIfStatement = 9, 
+		RULE_codeBlock = 10, RULE_returnStatement = 11, RULE_varDeclaration = 12, 
+		RULE_varAssigment = 13, RULE_simpleValue = 14, RULE_value = 15, RULE_functionCall = 16, 
+		RULE_functionArguments = 17, RULE_funParameters = 18, RULE_funParameter = 19, 
+		RULE_funDeclaration = 20;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"prog", "type", "arithmeticOperator", "command", "codeBlock", "returnStatement", 
-			"varDeclaration", "varAssigment", "simpleValue", "value", "functionCall", 
-			"functionArguments", "funParameters", "funParameter", "funDeclaration"
+			"prog", "type", "arithmeticOperator", "valueComparison", "valueComparator", 
+			"command", "conditionalStatement", "ifStatement", "elseStatement", "elseIfStatement", 
+			"codeBlock", "returnStatement", "varDeclaration", "varAssigment", "simpleValue", 
+			"value", "functionCall", "functionArguments", "funParameters", "funParameter", 
+			"funDeclaration"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'if'", "'else'", "'elIf'", "'fun'", "'var'", "'{'", "'}'", "'('", 
-			"')'", "'int'", "'real'", "';'", "'while'", "'return'", "'+'", "'-'", 
-			"'/'", "'%'", "'*'", "','", "'='"
+			null, "'if'", "'else'", "'elif'", "'>='", "'<='", "'<'", "'>'", "'=='", 
+			"'fun'", "'var'", "'{'", "'}'", "'('", "')'", "'int'", "'real'", "';'", 
+			"'while'", "'return'", "'+'", "'-'", "'/'", "'%'", "'*'", "','", "'='"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "If", "Else", "ElseIf", "Fucntion", "Variable", "LCurly", "RCurly", 
-			"LBracket", "RBracket", "IntType", "RealType", "CommandTerminator", "While", 
-			"Return", "Plus", "Minus", "Div", "Mod", "Mult", "Comma", "Assigment", 
-			"ID", "Int", "Real", "WS", "LineComment", "MultiLineComment"
+			null, "If", "Else", "ElseIf", "GreaterOrEqual", "SmallerOrEqual", "Smaller", 
+			"Greater", "Equal", "Fucntion", "Variable", "LCurly", "RCurly", "LBracket", 
+			"RBracket", "IntType", "RealType", "CommandTerminator", "While", "Return", 
+			"Plus", "Minus", "Div", "Mod", "Mult", "Comma", "Assigment", "ID", "Int", 
+			"Real", "WS", "LineComment", "MultiLineComment"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -135,21 +141,21 @@ public class SimpleGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31); 
+			setState(43); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(30);
+				setState(42);
 				funDeclaration();
 				}
 				}
-				setState(33); 
+				setState(45); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( _la==Fucntion );
-			setState(35);
+			setState(47);
 			match(EOF);
 			}
 		}
@@ -188,7 +194,7 @@ public class SimpleGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(37);
+			setState(49);
 			_la = _input.LA(1);
 			if ( !(_la==IntType || _la==RealType) ) {
 			_errHandler.recoverInline(this);
@@ -238,9 +244,108 @@ public class SimpleGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(39);
+			setState(51);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Div) | (1L << Mod) | (1L << Mult))) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ValueComparisonContext extends ParserRuleContext {
+		public List<ValueContext> value() {
+			return getRuleContexts(ValueContext.class);
+		}
+		public ValueContext value(int i) {
+			return getRuleContext(ValueContext.class,i);
+		}
+		public ValueComparatorContext valueComparator() {
+			return getRuleContext(ValueComparatorContext.class,0);
+		}
+		public ValueComparisonContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_valueComparison; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterValueComparison(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitValueComparison(this);
+		}
+	}
+
+	public final ValueComparisonContext valueComparison() throws RecognitionException {
+		ValueComparisonContext _localctx = new ValueComparisonContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_valueComparison);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(53);
+			value();
+			setState(54);
+			valueComparator();
+			setState(55);
+			value();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ValueComparatorContext extends ParserRuleContext {
+		public TerminalNode GreaterOrEqual() { return getToken(SimpleGrammarParser.GreaterOrEqual, 0); }
+		public TerminalNode SmallerOrEqual() { return getToken(SimpleGrammarParser.SmallerOrEqual, 0); }
+		public TerminalNode Smaller() { return getToken(SimpleGrammarParser.Smaller, 0); }
+		public TerminalNode Greater() { return getToken(SimpleGrammarParser.Greater, 0); }
+		public TerminalNode Equal() { return getToken(SimpleGrammarParser.Equal, 0); }
+		public ValueComparatorContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_valueComparator; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterValueComparator(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitValueComparator(this);
+		}
+	}
+
+	public final ValueComparatorContext valueComparator() throws RecognitionException {
+		ValueComparatorContext _localctx = new ValueComparatorContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_valueComparator);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(57);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << GreaterOrEqual) | (1L << SmallerOrEqual) | (1L << Smaller) | (1L << Greater) | (1L << Equal))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -275,6 +380,9 @@ public class SimpleGrammarParser extends Parser {
 		public ReturnStatementContext returnStatement() {
 			return getRuleContext(ReturnStatementContext.class,0);
 		}
+		public ConditionalStatementContext conditionalStatement() {
+			return getRuleContext(ConditionalStatementContext.class,0);
+		}
 		public CommandContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -291,41 +399,269 @@ public class SimpleGrammarParser extends Parser {
 
 	public final CommandContext command() throws RecognitionException {
 		CommandContext _localctx = new CommandContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_command);
+		enterRule(_localctx, 10, RULE_command);
 		try {
-			setState(47);
+			setState(66);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(41);
+				setState(59);
 				varDeclaration();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(42);
+				setState(60);
 				varAssigment();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(43);
+				setState(61);
 				functionCall();
-				setState(44);
+				setState(62);
 				match(CommandTerminator);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(46);
+				setState(64);
 				returnStatement();
 				}
 				break;
+			case 5:
+				enterOuterAlt(_localctx, 5);
+				{
+				setState(65);
+				conditionalStatement();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ConditionalStatementContext extends ParserRuleContext {
+		public IfStatementContext ifStatement() {
+			return getRuleContext(IfStatementContext.class,0);
+		}
+		public List<ElseIfStatementContext> elseIfStatement() {
+			return getRuleContexts(ElseIfStatementContext.class);
+		}
+		public ElseIfStatementContext elseIfStatement(int i) {
+			return getRuleContext(ElseIfStatementContext.class,i);
+		}
+		public ElseStatementContext elseStatement() {
+			return getRuleContext(ElseStatementContext.class,0);
+		}
+		public ConditionalStatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_conditionalStatement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterConditionalStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitConditionalStatement(this);
+		}
+	}
+
+	public final ConditionalStatementContext conditionalStatement() throws RecognitionException {
+		ConditionalStatementContext _localctx = new ConditionalStatementContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_conditionalStatement);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(68);
+			ifStatement();
+			setState(72);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==ElseIf) {
+				{
+				{
+				setState(69);
+				elseIfStatement();
+				}
+				}
+				setState(74);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(76);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==Else) {
+				{
+				setState(75);
+				elseStatement();
+				}
+			}
+
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IfStatementContext extends ParserRuleContext {
+		public TerminalNode If() { return getToken(SimpleGrammarParser.If, 0); }
+		public TerminalNode LBracket() { return getToken(SimpleGrammarParser.LBracket, 0); }
+		public ValueComparisonContext valueComparison() {
+			return getRuleContext(ValueComparisonContext.class,0);
+		}
+		public TerminalNode RBracket() { return getToken(SimpleGrammarParser.RBracket, 0); }
+		public CodeBlockContext codeBlock() {
+			return getRuleContext(CodeBlockContext.class,0);
+		}
+		public IfStatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_ifStatement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterIfStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitIfStatement(this);
+		}
+	}
+
+	public final IfStatementContext ifStatement() throws RecognitionException {
+		IfStatementContext _localctx = new IfStatementContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_ifStatement);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(78);
+			match(If);
+			setState(79);
+			match(LBracket);
+			setState(80);
+			valueComparison();
+			setState(81);
+			match(RBracket);
+			setState(82);
+			codeBlock();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ElseStatementContext extends ParserRuleContext {
+		public TerminalNode Else() { return getToken(SimpleGrammarParser.Else, 0); }
+		public CodeBlockContext codeBlock() {
+			return getRuleContext(CodeBlockContext.class,0);
+		}
+		public ElseStatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_elseStatement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterElseStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitElseStatement(this);
+		}
+	}
+
+	public final ElseStatementContext elseStatement() throws RecognitionException {
+		ElseStatementContext _localctx = new ElseStatementContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_elseStatement);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(84);
+			match(Else);
+			setState(85);
+			codeBlock();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ElseIfStatementContext extends ParserRuleContext {
+		public TerminalNode ElseIf() { return getToken(SimpleGrammarParser.ElseIf, 0); }
+		public TerminalNode LBracket() { return getToken(SimpleGrammarParser.LBracket, 0); }
+		public ValueComparisonContext valueComparison() {
+			return getRuleContext(ValueComparisonContext.class,0);
+		}
+		public TerminalNode RBracket() { return getToken(SimpleGrammarParser.RBracket, 0); }
+		public CodeBlockContext codeBlock() {
+			return getRuleContext(CodeBlockContext.class,0);
+		}
+		public ElseIfStatementContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_elseIfStatement; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).enterElseIfStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SimpleGrammarListener ) ((SimpleGrammarListener)listener).exitElseIfStatement(this);
+		}
+	}
+
+	public final ElseIfStatementContext elseIfStatement() throws RecognitionException {
+		ElseIfStatementContext _localctx = new ElseIfStatementContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_elseIfStatement);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(87);
+			match(ElseIf);
+			setState(88);
+			match(LBracket);
+			setState(89);
+			valueComparison();
+			setState(90);
+			match(RBracket);
+			setState(91);
+			codeBlock();
 			}
 		}
 		catch (RecognitionException re) {
@@ -370,32 +706,33 @@ public class SimpleGrammarParser extends Parser {
 
 	public final CodeBlockContext codeBlock() throws RecognitionException {
 		CodeBlockContext _localctx = new CodeBlockContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_codeBlock);
+		enterRule(_localctx, 20, RULE_codeBlock);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(49);
+			setState(93);
 			match(LCurly);
-			setState(54);
+			setState(98);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Variable) | (1L << LCurly) | (1L << Return) | (1L << ID))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << If) | (1L << Variable) | (1L << LCurly) | (1L << Return) | (1L << ID))) != 0)) {
 				{
-				setState(52);
+				setState(96);
 				_errHandler.sync(this);
 				switch (_input.LA(1)) {
+				case If:
 				case Variable:
 				case Return:
 				case ID:
 					{
-					setState(50);
+					setState(94);
 					command();
 					}
 					break;
 				case LCurly:
 					{
-					setState(51);
+					setState(95);
 					codeBlock();
 					}
 					break;
@@ -403,11 +740,11 @@ public class SimpleGrammarParser extends Parser {
 					throw new NoViableAltException(this);
 				}
 				}
-				setState(56);
+				setState(100);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(57);
+			setState(101);
 			match(RCurly);
 			}
 		}
@@ -444,15 +781,15 @@ public class SimpleGrammarParser extends Parser {
 
 	public final ReturnStatementContext returnStatement() throws RecognitionException {
 		ReturnStatementContext _localctx = new ReturnStatementContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_returnStatement);
+		enterRule(_localctx, 22, RULE_returnStatement);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(59);
+			setState(103);
 			match(Return);
-			setState(60);
+			setState(104);
 			value();
-			setState(61);
+			setState(105);
 			match(CommandTerminator);
 			}
 		}
@@ -494,21 +831,21 @@ public class SimpleGrammarParser extends Parser {
 
 	public final VarDeclarationContext varDeclaration() throws RecognitionException {
 		VarDeclarationContext _localctx = new VarDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_varDeclaration);
+		enterRule(_localctx, 24, RULE_varDeclaration);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(63);
+			setState(107);
 			match(Variable);
-			setState(64);
+			setState(108);
 			type();
-			setState(65);
+			setState(109);
 			match(ID);
-			setState(66);
+			setState(110);
 			match(Assigment);
-			setState(67);
+			setState(111);
 			value();
-			setState(68);
+			setState(112);
 			match(CommandTerminator);
 			}
 		}
@@ -546,17 +883,17 @@ public class SimpleGrammarParser extends Parser {
 
 	public final VarAssigmentContext varAssigment() throws RecognitionException {
 		VarAssigmentContext _localctx = new VarAssigmentContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_varAssigment);
+		enterRule(_localctx, 26, RULE_varAssigment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(70);
+			setState(114);
 			match(ID);
-			setState(71);
+			setState(115);
 			match(Assigment);
-			setState(72);
+			setState(116);
 			value();
-			setState(73);
+			setState(117);
 			match(CommandTerminator);
 			}
 		}
@@ -594,36 +931,36 @@ public class SimpleGrammarParser extends Parser {
 
 	public final SimpleValueContext simpleValue() throws RecognitionException {
 		SimpleValueContext _localctx = new SimpleValueContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_simpleValue);
+		enterRule(_localctx, 28, RULE_simpleValue);
 		try {
-			setState(79);
+			setState(123);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(75);
+				setState(119);
 				match(ID);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(76);
+				setState(120);
 				functionCall();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(77);
+				setState(121);
 				match(Int);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(78);
+				setState(122);
 				match(Real);
 				}
 				break;
@@ -669,26 +1006,26 @@ public class SimpleGrammarParser extends Parser {
 
 	public final ValueContext value() throws RecognitionException {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_value);
+		enterRule(_localctx, 30, RULE_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(81);
+			setState(125);
 			simpleValue();
-			setState(86);
+			setState(130);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Div) | (1L << Mod) | (1L << Mult) | (1L << ID) | (1L << Int) | (1L << Real))) != 0)) {
 				{
-				setState(84);
+				setState(128);
 				_errHandler.sync(this);
 				switch (_input.LA(1)) {
 				case ID:
 				case Int:
 				case Real:
 					{
-					setState(82);
+					setState(126);
 					simpleValue();
 					}
 					break;
@@ -698,7 +1035,7 @@ public class SimpleGrammarParser extends Parser {
 				case Mod:
 				case Mult:
 					{
-					setState(83);
+					setState(127);
 					arithmeticOperator();
 					}
 					break;
@@ -706,7 +1043,7 @@ public class SimpleGrammarParser extends Parser {
 					throw new NoViableAltException(this);
 				}
 				}
-				setState(88);
+				setState(132);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -746,17 +1083,17 @@ public class SimpleGrammarParser extends Parser {
 
 	public final FunctionCallContext functionCall() throws RecognitionException {
 		FunctionCallContext _localctx = new FunctionCallContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_functionCall);
+		enterRule(_localctx, 32, RULE_functionCall);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(89);
+			setState(133);
 			match(ID);
-			setState(90);
+			setState(134);
 			match(LBracket);
-			setState(91);
+			setState(135);
 			functionArguments();
-			setState(92);
+			setState(136);
 			match(RBracket);
 			}
 		}
@@ -798,31 +1135,31 @@ public class SimpleGrammarParser extends Parser {
 
 	public final FunctionArgumentsContext functionArguments() throws RecognitionException {
 		FunctionArgumentsContext _localctx = new FunctionArgumentsContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_functionArguments);
+		enterRule(_localctx, 34, RULE_functionArguments);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(102);
+			setState(146);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ID) | (1L << Int) | (1L << Real))) != 0)) {
 				{
-				setState(94);
+				setState(138);
 				value();
-				setState(99);
+				setState(143);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==Comma) {
 					{
 					{
-					setState(95);
+					setState(139);
 					match(Comma);
-					setState(96);
+					setState(140);
 					value();
 					}
 					}
-					setState(101);
+					setState(145);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -869,26 +1206,26 @@ public class SimpleGrammarParser extends Parser {
 
 	public final FunParametersContext funParameters() throws RecognitionException {
 		FunParametersContext _localctx = new FunParametersContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_funParameters);
+		enterRule(_localctx, 36, RULE_funParameters);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104);
+			setState(148);
 			funParameter();
-			setState(109);
+			setState(153);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==Comma) {
 				{
 				{
-				setState(105);
+				setState(149);
 				match(Comma);
-				setState(106);
+				setState(150);
 				funParameter();
 				}
 				}
-				setState(111);
+				setState(155);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -926,13 +1263,13 @@ public class SimpleGrammarParser extends Parser {
 
 	public final FunParameterContext funParameter() throws RecognitionException {
 		FunParameterContext _localctx = new FunParameterContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_funParameter);
+		enterRule(_localctx, 38, RULE_funParameter);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(112);
+			setState(156);
 			type();
-			setState(113);
+			setState(157);
 			match(ID);
 			}
 		}
@@ -977,32 +1314,32 @@ public class SimpleGrammarParser extends Parser {
 
 	public final FunDeclarationContext funDeclaration() throws RecognitionException {
 		FunDeclarationContext _localctx = new FunDeclarationContext(_ctx, getState());
-		enterRule(_localctx, 28, RULE_funDeclaration);
+		enterRule(_localctx, 40, RULE_funDeclaration);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(115);
+			setState(159);
 			match(Fucntion);
-			setState(116);
+			setState(160);
 			type();
-			setState(117);
+			setState(161);
 			match(ID);
-			setState(118);
+			setState(162);
 			match(LBracket);
-			setState(120);
+			setState(164);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==IntType || _la==RealType) {
 				{
-				setState(119);
+				setState(163);
 				funParameters();
 				}
 			}
 
-			setState(122);
+			setState(166);
 			match(RBracket);
-			setState(123);
+			setState(167);
 			codeBlock();
 			}
 		}
@@ -1018,37 +1355,54 @@ public class SimpleGrammarParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35\u0080\4\2\t\2"+
-		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
-		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\6\2\"\n\2\r\2"+
-		"\16\2#\3\2\3\2\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\5\5\62\n\5\3\6"+
-		"\3\6\3\6\7\6\67\n\6\f\6\16\6:\13\6\3\6\3\6\3\7\3\7\3\7\3\7\3\b\3\b\3\b"+
-		"\3\b\3\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\5\nR\n\n\3\13\3\13"+
-		"\3\13\7\13W\n\13\f\13\16\13Z\13\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\7\r"+
-		"d\n\r\f\r\16\rg\13\r\5\ri\n\r\3\16\3\16\3\16\7\16n\n\16\f\16\16\16q\13"+
-		"\16\3\17\3\17\3\17\3\20\3\20\3\20\3\20\3\20\5\20{\n\20\3\20\3\20\3\20"+
-		"\3\20\2\2\21\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36\2\4\3\2\f\r\3\2\21"+
-		"\25\2\177\2!\3\2\2\2\4\'\3\2\2\2\6)\3\2\2\2\b\61\3\2\2\2\n\63\3\2\2\2"+
-		"\f=\3\2\2\2\16A\3\2\2\2\20H\3\2\2\2\22Q\3\2\2\2\24S\3\2\2\2\26[\3\2\2"+
-		"\2\30h\3\2\2\2\32j\3\2\2\2\34r\3\2\2\2\36u\3\2\2\2 \"\5\36\20\2! \3\2"+
-		"\2\2\"#\3\2\2\2#!\3\2\2\2#$\3\2\2\2$%\3\2\2\2%&\7\2\2\3&\3\3\2\2\2\'("+
-		"\t\2\2\2(\5\3\2\2\2)*\t\3\2\2*\7\3\2\2\2+\62\5\16\b\2,\62\5\20\t\2-.\5"+
-		"\26\f\2./\7\16\2\2/\62\3\2\2\2\60\62\5\f\7\2\61+\3\2\2\2\61,\3\2\2\2\61"+
-		"-\3\2\2\2\61\60\3\2\2\2\62\t\3\2\2\2\638\7\b\2\2\64\67\5\b\5\2\65\67\5"+
-		"\n\6\2\66\64\3\2\2\2\66\65\3\2\2\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29"+
-		";\3\2\2\2:8\3\2\2\2;<\7\t\2\2<\13\3\2\2\2=>\7\20\2\2>?\5\24\13\2?@\7\16"+
-		"\2\2@\r\3\2\2\2AB\7\7\2\2BC\5\4\3\2CD\7\30\2\2DE\7\27\2\2EF\5\24\13\2"+
-		"FG\7\16\2\2G\17\3\2\2\2HI\7\30\2\2IJ\7\27\2\2JK\5\24\13\2KL\7\16\2\2L"+
-		"\21\3\2\2\2MR\7\30\2\2NR\5\26\f\2OR\7\31\2\2PR\7\32\2\2QM\3\2\2\2QN\3"+
-		"\2\2\2QO\3\2\2\2QP\3\2\2\2R\23\3\2\2\2SX\5\22\n\2TW\5\22\n\2UW\5\6\4\2"+
-		"VT\3\2\2\2VU\3\2\2\2WZ\3\2\2\2XV\3\2\2\2XY\3\2\2\2Y\25\3\2\2\2ZX\3\2\2"+
-		"\2[\\\7\30\2\2\\]\7\n\2\2]^\5\30\r\2^_\7\13\2\2_\27\3\2\2\2`e\5\24\13"+
-		"\2ab\7\26\2\2bd\5\24\13\2ca\3\2\2\2dg\3\2\2\2ec\3\2\2\2ef\3\2\2\2fi\3"+
-		"\2\2\2ge\3\2\2\2h`\3\2\2\2hi\3\2\2\2i\31\3\2\2\2jo\5\34\17\2kl\7\26\2"+
-		"\2ln\5\34\17\2mk\3\2\2\2nq\3\2\2\2om\3\2\2\2op\3\2\2\2p\33\3\2\2\2qo\3"+
-		"\2\2\2rs\5\4\3\2st\7\30\2\2t\35\3\2\2\2uv\7\6\2\2vw\5\4\3\2wx\7\30\2\2"+
-		"xz\7\n\2\2y{\5\32\16\2zy\3\2\2\2z{\3\2\2\2{|\3\2\2\2|}\7\13\2\2}~\5\n"+
-		"\6\2~\37\3\2\2\2\r#\61\668QVXehoz";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\"\u00ac\4\2\t\2\4"+
+		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
+		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
+		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\3\2\6\2.\n\2\r\2\16\2/\3\2\3"+
+		"\2\3\3\3\3\3\4\3\4\3\5\3\5\3\5\3\5\3\6\3\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7"+
+		"\5\7E\n\7\3\b\3\b\7\bI\n\b\f\b\16\bL\13\b\3\b\5\bO\n\b\3\t\3\t\3\t\3\t"+
+		"\3\t\3\t\3\n\3\n\3\n\3\13\3\13\3\13\3\13\3\13\3\13\3\f\3\f\3\f\7\fc\n"+
+		"\f\f\f\16\ff\13\f\3\f\3\f\3\r\3\r\3\r\3\r\3\16\3\16\3\16\3\16\3\16\3\16"+
+		"\3\16\3\17\3\17\3\17\3\17\3\17\3\20\3\20\3\20\3\20\5\20~\n\20\3\21\3\21"+
+		"\3\21\7\21\u0083\n\21\f\21\16\21\u0086\13\21\3\22\3\22\3\22\3\22\3\22"+
+		"\3\23\3\23\3\23\7\23\u0090\n\23\f\23\16\23\u0093\13\23\5\23\u0095\n\23"+
+		"\3\24\3\24\3\24\7\24\u009a\n\24\f\24\16\24\u009d\13\24\3\25\3\25\3\25"+
+		"\3\26\3\26\3\26\3\26\3\26\5\26\u00a7\n\26\3\26\3\26\3\26\3\26\2\2\27\2"+
+		"\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*\2\5\3\2\21\22\3\2\26\32\3"+
+		"\2\6\n\2\u00a8\2-\3\2\2\2\4\63\3\2\2\2\6\65\3\2\2\2\b\67\3\2\2\2\n;\3"+
+		"\2\2\2\fD\3\2\2\2\16F\3\2\2\2\20P\3\2\2\2\22V\3\2\2\2\24Y\3\2\2\2\26_"+
+		"\3\2\2\2\30i\3\2\2\2\32m\3\2\2\2\34t\3\2\2\2\36}\3\2\2\2 \177\3\2\2\2"+
+		"\"\u0087\3\2\2\2$\u0094\3\2\2\2&\u0096\3\2\2\2(\u009e\3\2\2\2*\u00a1\3"+
+		"\2\2\2,.\5*\26\2-,\3\2\2\2./\3\2\2\2/-\3\2\2\2/\60\3\2\2\2\60\61\3\2\2"+
+		"\2\61\62\7\2\2\3\62\3\3\2\2\2\63\64\t\2\2\2\64\5\3\2\2\2\65\66\t\3\2\2"+
+		"\66\7\3\2\2\2\678\5 \21\289\5\n\6\29:\5 \21\2:\t\3\2\2\2;<\t\4\2\2<\13"+
+		"\3\2\2\2=E\5\32\16\2>E\5\34\17\2?@\5\"\22\2@A\7\23\2\2AE\3\2\2\2BE\5\30"+
+		"\r\2CE\5\16\b\2D=\3\2\2\2D>\3\2\2\2D?\3\2\2\2DB\3\2\2\2DC\3\2\2\2E\r\3"+
+		"\2\2\2FJ\5\20\t\2GI\5\24\13\2HG\3\2\2\2IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2"+
+		"KN\3\2\2\2LJ\3\2\2\2MO\5\22\n\2NM\3\2\2\2NO\3\2\2\2O\17\3\2\2\2PQ\7\3"+
+		"\2\2QR\7\17\2\2RS\5\b\5\2ST\7\20\2\2TU\5\26\f\2U\21\3\2\2\2VW\7\4\2\2"+
+		"WX\5\26\f\2X\23\3\2\2\2YZ\7\5\2\2Z[\7\17\2\2[\\\5\b\5\2\\]\7\20\2\2]^"+
+		"\5\26\f\2^\25\3\2\2\2_d\7\r\2\2`c\5\f\7\2ac\5\26\f\2b`\3\2\2\2ba\3\2\2"+
+		"\2cf\3\2\2\2db\3\2\2\2de\3\2\2\2eg\3\2\2\2fd\3\2\2\2gh\7\16\2\2h\27\3"+
+		"\2\2\2ij\7\25\2\2jk\5 \21\2kl\7\23\2\2l\31\3\2\2\2mn\7\f\2\2no\5\4\3\2"+
+		"op\7\35\2\2pq\7\34\2\2qr\5 \21\2rs\7\23\2\2s\33\3\2\2\2tu\7\35\2\2uv\7"+
+		"\34\2\2vw\5 \21\2wx\7\23\2\2x\35\3\2\2\2y~\7\35\2\2z~\5\"\22\2{~\7\36"+
+		"\2\2|~\7\37\2\2}y\3\2\2\2}z\3\2\2\2}{\3\2\2\2}|\3\2\2\2~\37\3\2\2\2\177"+
+		"\u0084\5\36\20\2\u0080\u0083\5\36\20\2\u0081\u0083\5\6\4\2\u0082\u0080"+
+		"\3\2\2\2\u0082\u0081\3\2\2\2\u0083\u0086\3\2\2\2\u0084\u0082\3\2\2\2\u0084"+
+		"\u0085\3\2\2\2\u0085!\3\2\2\2\u0086\u0084\3\2\2\2\u0087\u0088\7\35\2\2"+
+		"\u0088\u0089\7\17\2\2\u0089\u008a\5$\23\2\u008a\u008b\7\20\2\2\u008b#"+
+		"\3\2\2\2\u008c\u0091\5 \21\2\u008d\u008e\7\33\2\2\u008e\u0090\5 \21\2"+
+		"\u008f\u008d\3\2\2\2\u0090\u0093\3\2\2\2\u0091\u008f\3\2\2\2\u0091\u0092"+
+		"\3\2\2\2\u0092\u0095\3\2\2\2\u0093\u0091\3\2\2\2\u0094\u008c\3\2\2\2\u0094"+
+		"\u0095\3\2\2\2\u0095%\3\2\2\2\u0096\u009b\5(\25\2\u0097\u0098\7\33\2\2"+
+		"\u0098\u009a\5(\25\2\u0099\u0097\3\2\2\2\u009a\u009d\3\2\2\2\u009b\u0099"+
+		"\3\2\2\2\u009b\u009c\3\2\2\2\u009c\'\3\2\2\2\u009d\u009b\3\2\2\2\u009e"+
+		"\u009f\5\4\3\2\u009f\u00a0\7\35\2\2\u00a0)\3\2\2\2\u00a1\u00a2\7\13\2"+
+		"\2\u00a2\u00a3\5\4\3\2\u00a3\u00a4\7\35\2\2\u00a4\u00a6\7\17\2\2\u00a5"+
+		"\u00a7\5&\24\2\u00a6\u00a5\3\2\2\2\u00a6\u00a7\3\2\2\2\u00a7\u00a8\3\2"+
+		"\2\2\u00a8\u00a9\7\20\2\2\u00a9\u00aa\5\26\f\2\u00aa+\3\2\2\2\17/DJNb"+
+		"d}\u0082\u0084\u0091\u0094\u009b\u00a6";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
