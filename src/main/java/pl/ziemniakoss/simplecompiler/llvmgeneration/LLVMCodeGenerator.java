@@ -78,6 +78,21 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
+	public void exitValueComparison(SimpleGrammarParser.ValueComparisonContext ctx) {
+		new ExitValueComparisonHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void enterConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) {
+		new EnterConditionalStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) {
+		new ExitConditionalStatementHandler().handle(state, ctx);
+	}
+
+	@Override
 	public void exitValue(SimpleGrammarParser.ValueContext ctx) {
 		new ExitValueHandler().handle(state, ctx);
 	}

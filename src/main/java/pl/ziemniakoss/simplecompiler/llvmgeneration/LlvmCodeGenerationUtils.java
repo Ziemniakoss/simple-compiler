@@ -7,6 +7,22 @@ import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 import java.util.LinkedList;
 
 public class LlvmCodeGenerationUtils {
+	public static final String INTEGER_COMPARISON_INSTRUCTION = "icmp";
+	public static final String INTEGER_COMPARISON_EQUAL = "eq";
+	public static final String INTEGER_COMPARISON_NOT_EQUAL = "neq";
+	public static final String INTEGER_COMPARISON_GREATER = "sgt";
+	public static final String INTEGER_COMPARISON_GREATER_OR_EQUAL = "sge";
+	public static final String INTEGER_COMPARISON_SMALLER = "slt";
+	public static final String INTEGER_COMPARISON_SMALLER_OR_EQUAL = "sle";
+
+	public static final String REAL_COMPARISON_INSTRUCTION = "fcmp";
+	public static final String REAL_COMPARISON_EQUAL = "ueq";
+	public static final String REAL_COMPARISON_NOT_EQUAL = "une";
+	public static final String REAL_COMPARISON_GREATER = "ugt";
+	public static final String REAL_COMPARISON_GREATER_OR_EQUAL = "uge";
+	public static final String REAL_COMPARISON_SMALLER = "ult";
+	public static final String REAL_COMPARISON_SMALLER_OR_EQUAL = "ule";
+
 	public static int genererateLlvmCodeForFunctionCall(LlvmCodeGeneratorState state, SimpleGrammarParser.FunctionCallContext ctx) {
 		String calledFunctionName = ctx.ID().toString();
 		Function calledFunction = state.getFunctionNameToDefinition().get(calledFunctionName);
@@ -59,5 +75,60 @@ public class LlvmCodeGenerationUtils {
 			.append('\n')
 			.append("\t".repeat(state.indent));
 		return state.nextOperationIndex++;
+	}
+
+	public static ComparisonType getComparisonType(SimpleGrammarParser.ValueComparatorContext ctx) {
+		if (ctx.Equal() != null) {
+			return ComparisonType.EQUAL;
+		} else if (ctx.NotEqual() != null) {
+			return ComparisonType.NOT_EQUAL;
+		} else if (ctx.Greater() != null) {
+			return ComparisonType.GREATER;
+		} else if (ctx.GreaterOrEqual() != null) {
+			return ComparisonType.GREATER_OR_EQUAL;
+		} else if (ctx.Smaller() != null) {
+			return ComparisonType.SMALLER;
+		} else {
+			return ComparisonType.SMALLER_OR_EQUAL;
+		}
+	}
+
+	public static String getLlvmComparisonTypeString(VariableType variableType, ComparisonType comparisonType) {
+		if (variableType == VariableType.INTEGER) {
+			switch (comparisonType) {
+				case SMALLER:
+					return INTEGER_COMPARISON_SMALLER;
+				case SMALLER_OR_EQUAL:
+					return INTEGER_COMPARISON_SMALLER_OR_EQUAL;
+				case GREATER:
+					return INTEGER_COMPARISON_GREATER;
+				case GREATER_OR_EQUAL:
+					return INTEGER_COMPARISON_GREATER_OR_EQUAL;
+				case EQUAL:
+					return INTEGER_COMPARISON_EQUAL;
+				case NOT_EQUAL:
+					return INTEGER_COMPARISON_NOT_EQUAL;
+				default:
+					return null;
+			}
+		} else {
+			switch (comparisonType) {
+				case SMALLER:
+					return REAL_COMPARISON_SMALLER;
+				case SMALLER_OR_EQUAL:
+					return REAL_COMPARISON_SMALLER_OR_EQUAL;
+				case GREATER:
+					return REAL_COMPARISON_GREATER;
+				case GREATER_OR_EQUAL:
+					return REAL_COMPARISON_GREATER_OR_EQUAL;
+				case EQUAL:
+					return REAL_COMPARISON_EQUAL;
+				case NOT_EQUAL:
+					return REAL_COMPARISON_NOT_EQUAL;
+				default:
+					return null;
+			}
+
+		}
 	}
 }

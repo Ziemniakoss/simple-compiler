@@ -9,7 +9,7 @@ arithmeticOperator: Plus | Minus | Div | Mod | Mult;
 
 valueComparison: value valueComparator value;
 
-valueComparator: GreaterOrEqual | SmallerOrEqual | Smaller | Greater | Equal;
+valueComparator: GreaterOrEqual | SmallerOrEqual | Smaller | Greater | Equal | NotEqual;
 
 If: 'if';
 Else: 'else';
@@ -19,6 +19,7 @@ SmallerOrEqual: '<=';
 Smaller: '<';
 Greater: '>';
 Equal: '==';
+NotEqual: '!==';
 Fucntion: 'fun';
 Variable: 'var';
 LCurly: '{';

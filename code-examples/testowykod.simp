@@ -13,4 +13,11 @@ fun int main() {
 	writeReal(firstOperand secondOperand *);
 	writeReal(firstOperand secondOperand /);
 	writeReal(firstOperand secondOperand %); // na intach
+	var real complex = 20 3 * 50 + 9.0 - 2 /;
+	writeReal(complex);
+	if(2 > 1) {
+		writeReal(456);
+	}
+	if(2.9 == 3) {
+	}
 }
