@@ -17,6 +17,10 @@ fun int main() {
 		writeReal(4);
 	}elif(2 >= 2) {
 		writeInt(5);
-		}
-
+	}
+	if(5 < -90) {
+		writeInt(6);
+	} else {
+		writeInt(7);
+	}
 }
