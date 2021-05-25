@@ -1,23 +1,23 @@
-fun int sum(int x, int y) {
-	return x y +;
+fun int testIf() {
+	if(2 2 + > 1 1 +) {
+		writeInt(1);
+	}
 }
+/*
+fun int testIfElseIf() {
+	if(2 == 3) {
+		writeReal(2);
+	} elif(2 == 9) {
+		writeInt(1);
+	}
+}*/
 
-/**
- * Test of all arithmetic operations
- */
 fun int main() {
-	var real firstOperand = readReal();
-	var real secondOperand = readReal();
-	writeReal(firstOperand secondOperand +);
-	writeReal(firstOperand secondOperand -);
-	writeReal(firstOperand secondOperand *);
-	writeReal(firstOperand secondOperand /);
-	writeReal(firstOperand secondOperand %); // na intach
-	var real complex = 20 3 * 50 + 9.0 - 2 /;
-	writeReal(complex);
-	if(2 > 1) {
-		writeReal(456);
+	if(2 2 +== 3 1  +) {
+		writeInt(2);
 	}
-	if(2.9 == 3) {
+	if(2== 3) {
+		writeInt(3);
 	}
+
 }

@@ -13,6 +13,12 @@ public class LlvmCodeGeneratorState {
 	private final Map<String, Function> functionNameToDefinition = new HashMap<>();
 	private final StringBuilder llvmCode = new StringBuilder();
 	private final Stack<Map<String, Variable>> variableContexts = new Stack<>();
+
+	public Stack<Map<String, Integer>> getLabelsStack() {
+		return labelsStack;
+	}
+
+	private final Stack<Map<String, Integer>> labelsStack = new Stack<>();
 	public int nextOperationIndex = 1;
 	public int indent = 0;
 	private final Map<ParserRuleContext, Integer> contextToOperationWithResult = new HashMap<>();
@@ -57,14 +63,6 @@ public class LlvmCodeGeneratorState {
 		return llvmCode;
 	}
 
-	public int getNextOperationIndex() {
-		return nextOperationIndex;
-	}
-
-	public void setNextOperationIndex(int nextOperationIndex) {
-		this.nextOperationIndex = nextOperationIndex;
-	}
-
 	public int getIndent() {
 		return indent;
 	}
@@ -91,5 +89,13 @@ public class LlvmCodeGeneratorState {
 
 	public Map<ParserRuleContext, Integer> getContextToOperationWithResult() {
 		return contextToOperationWithResult;
+	}
+
+	public int getLabel(String labelName) {
+		return labelsStack.peek().get(labelName);
+	}
+
+	public void setLabel(String labelName, int operationNumber) {
+		labelsStack.peek().put(labelName, operationNumber);
 	}
 }

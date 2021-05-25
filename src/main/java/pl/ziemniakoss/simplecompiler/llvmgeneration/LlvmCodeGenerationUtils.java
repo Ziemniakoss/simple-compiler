@@ -1,5 +1,6 @@
 package pl.ziemniakoss.simplecompiler.llvmgeneration;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import pl.ziemniakoss.simplecompiler.Function;
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
@@ -130,5 +131,33 @@ public class LlvmCodeGenerationUtils {
 			}
 
 		}
+	}
+
+	public static String getContextKey(ParserRuleContext ctx) {
+		return ctx.getStart().getLine() +
+			":" +
+			ctx.getStart().getCharPositionInLine() +
+			"-" +
+			ctx.getStop().getLine() +
+			":" +
+			ctx.getStop().getCharPositionInLine();
+	}
+
+	public static String getEndOfConditionalBlockKey(SimpleGrammarParser.ConditionalStatementContext ctx) {
+		return getContextKey(ctx) + "key";
+	}
+
+	public static void replaceAllPlaceholdersInCodeWithValue(LlvmCodeGeneratorState state, String placeholder, String value) {
+		int startIndexOfPlaceholder = state.getLlvmCode().indexOf(placeholder);
+		while (startIndexOfPlaceholder != -1) {
+			state.getLlvmCode().replace(startIndexOfPlaceholder, startIndexOfPlaceholder + placeholder.length(), value);
+			startIndexOfPlaceholder = state.getLlvmCode().indexOf(placeholder);
+		}
+	}
+
+	public static void replaceValueComparisonPlaceholders(LlvmCodeGeneratorState state, SimpleGrammarParser.ValueComparisonContext ctx) {
+		final var valueComparisonPlaceholder = getContextKey(ctx);
+		final var replacement = "%" + state.getContextToOperationWithResult().get(ctx);
+		replaceAllPlaceholdersInCodeWithValue(state, valueComparisonPlaceholder, replacement);
 	}
 }

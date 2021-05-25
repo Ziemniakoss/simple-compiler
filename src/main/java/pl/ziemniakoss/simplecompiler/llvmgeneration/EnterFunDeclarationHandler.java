@@ -11,7 +11,7 @@ import java.util.Map;
 public class EnterFunDeclarationHandler implements IEnterContextHandler<SimpleGrammarParser.FunDeclarationContext> {
 	@Override
 	public void handle(LlvmCodeGeneratorState state, SimpleGrammarParser.FunDeclarationContext ctx) {
-
+		state.getLabelsStack().push(new HashMap<>());
 		state.getLlvmCode().append("define dso_local ");
 		if (ctx.type().IntType() != null) {
 			state.getLlvmCode().append("i32 ");

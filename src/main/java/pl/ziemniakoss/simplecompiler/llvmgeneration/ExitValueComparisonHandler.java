@@ -36,6 +36,7 @@ public class ExitValueComparisonHandler implements IExitContextHandler<SimpleGra
 			state, comparisonType, operationType, firstOperandOperationNumber, secondOperandOperationNumber
 		);
 		state.getContextToOperationWithResult().put(ctx, resultOperationNumber);
+		state.setLabel(getContextKey(ctx), resultOperationNumber);
 	}
 
 	private int generateComparisonCode(
@@ -57,6 +58,6 @@ public class ExitValueComparisonHandler implements IExitContextHandler<SimpleGra
 			.append(firstOperandOperationNumber)
 			.append(", %")
 			.append(secondOperandOperationNumber);
-		return  ++state.nextOperationIndex;
+		return  state.nextOperationIndex++;
 	}
 }
