@@ -74,6 +74,11 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
+	public void exitElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx) {
+		new ExitElseIfStatementHandler().handle(state, ctx);
+	}
+
+	@Override
 	public void enterIfStatement(SimpleGrammarParser.IfStatementContext ctx) {
 		new EnterIfStatementHandler().handle(state, ctx);
 	}
