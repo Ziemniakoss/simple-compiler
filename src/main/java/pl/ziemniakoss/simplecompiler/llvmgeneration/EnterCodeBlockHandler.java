@@ -11,9 +11,6 @@ public class EnterCodeBlockHandler implements IEnterContextHandler<SimpleGrammar
 	@Override
 	public void handle(LlvmCodeGeneratorState state, SimpleGrammarParser.CodeBlockContext ctx) {
 		state.getLlvmCode().append("\t".repeat(state.indent++));
-		if (state.isGlobalContext()) {//todo move to exitDunDeclaration
-			state.getLlvmCode().append('{');
-		}
 		state.getLlvmCode().append('\n');
 		state.getVariableContexts().push(new HashMap<>());
 		if(ctx.parent instanceof SimpleGrammarParser.IfStatementContext) {

@@ -1,26 +1,25 @@
-/*
-fun int testIfElseIf() {
-	if(2 == 3) {
-		writeReal(2);
-	} elif(2 == 9) {
+fun int testConditionalsStatements() {
+	if(2 2 +== 3 1  +) {
 		writeInt(1);
 	}
-}*/
-
-fun int main() {
-	if(2 2 +== 3 1  +) {
-		writeInt(2);
-	}
-	if(2== 3) {
-		writeInt(3);
+	if(2 == 3) {
+		writeInt(-3);
 	}elif(1 > 3) {
 		writeReal(4);
 	}elif(2 >= 2) {
-		writeInt(5);
+		writeInt(2);
+	} else {
+		writeInt(-90812);
 	}
+	writeInt(3);
 	if(5 < -90) {
 		writeInt(6);
 	} else {
-		writeInt(7);
+		writeInt(4);
 	}
+	writeInt(5);
+}
+
+fun int main() {
+	testConditionalsStatements();
 }

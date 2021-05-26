@@ -15,8 +15,6 @@ public class ExitFunDeclarationHandler implements IExitContextHandler<SimpleGram
 			.append(ctx.type().IntType() != null ? " i32 0\n" : " double 0.0\n")
 			.append("}\n\n");
 		state.setCurrentlyDefinedFunctionReturnType(null);
-//		state.getVariableContexts().pop();
-		System.out.println("exit fun " + ctx.ID().toString());
 
 		replaceAllPlaceholders(state, state.getLabelsStack().pop());
 	}

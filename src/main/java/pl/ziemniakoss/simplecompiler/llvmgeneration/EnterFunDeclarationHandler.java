@@ -23,17 +23,28 @@ public class EnterFunDeclarationHandler implements IEnterContextHandler<SimpleGr
 		state.getLlvmCode().append("@");
 		state.getLlvmCode().append(ctx.ID().toString());
 		state.getLlvmCode().append("(");
+		state.getFunctionNameToDefinition().put(ctx.ID().toString(), new Function(
+			ctx.ID().toString(),
+			ctx.type().IntType() != null ? VariableType.INTEGER : VariableType.REAL,
+			handleFunParams(state, ctx)
+		));
+
+		state.getLlvmCode().append(") {");
+
+
+	}
+
+	private VariableType[] handleFunParams(LlvmCodeGeneratorState state, SimpleGrammarParser.FunDeclarationContext ctx) {
+		if(ctx.funParameters() == null || ctx.funParameters().funParameter().size() == 0) {
+			state.nextOperationIndex = 1;
+			return new VariableType[0];
+		}
+		state.nextOperationIndex = 0;
 		Map<String, Variable> contextWithFunParameters = new HashMap<>();
 		state.getVariableContexts().push(contextWithFunParameters);
-		if (ctx.funParameters() == null || ctx.funParameters().funParameter() == null) {
-			state.getLlvmCode().append(") {");
-			state.nextOperationIndex = 1;
-			return;
-		}
-		boolean isFirst = true;
-		state.nextOperationIndex = 0;
 		VariableType[] functionParametersTypes = new VariableType[ctx.funParameters() != null ? ctx.funParameters().funParameter().size() : 0];
 		var functionParameters = ctx.funParameters().funParameter();
+		boolean isFirst = true;
 		for (int i = 0; i < functionParameters.size(); i++) {
 			var parameter = functionParameters.get(i);
 			var parameterAsVariable = new Variable(
@@ -54,13 +65,9 @@ public class EnterFunDeclarationHandler implements IEnterContextHandler<SimpleGr
 				.append(" %")
 				.append(parameterAsVariable.getRegisterWithValue());
 		}
-		state.getLlvmCode().append(") {");
-		state.getFunctionNameToDefinition().put(ctx.ID().toString(), new Function(
-			ctx.ID().toString(),
-			ctx.type().IntType() != null ? VariableType.INTEGER : VariableType.REAL,
-			functionParametersTypes
-		));
 		state.nextOperationIndex++;
+		return functionParametersTypes;
+
 	}
 
 }
