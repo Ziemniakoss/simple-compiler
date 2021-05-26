@@ -2,6 +2,7 @@ package pl.ziemniakoss.simplecompiler.llvmgeneration;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import pl.ziemniakoss.simplecompiler.EnterElseIfStatementHandler;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
@@ -63,6 +64,31 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
+	public void enterElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx) {
+		new EnterElseIfStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitIfStatement(SimpleGrammarParser.IfStatementContext ctx) {
+		new ExitIfStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx) {
+		new ExitElseIfStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void enterElseStatement(SimpleGrammarParser.ElseStatementContext ctx) {
+		new EnterElseStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitElseStatement(SimpleGrammarParser.ElseStatementContext ctx) {
+		new ExitElseStatementHandler().handle(state, ctx);
+	}
+
+	@Override
 	public void enterFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		new EnterFunDeclarationHandler().handle(state, ctx);
 	}
@@ -75,6 +101,21 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	@Override
 	public void exitFunDeclaration(SimpleGrammarParser.FunDeclarationContext ctx) {
 		new ExitFunDeclarationHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitValueComparison(SimpleGrammarParser.ValueComparisonContext ctx) {
+		new ExitValueComparisonHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void enterConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) {
+		new EnterConditionalStatementHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void exitConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) {
+		new ExitConditionalStatementHandler().handle(state, ctx);
 	}
 
 	@Override
