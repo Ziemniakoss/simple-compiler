@@ -22,7 +22,7 @@ public class Main {
 			System.err.println("Error occurred while analyzing code");
 			System.err.println(e.toString());
 		} catch (FileNotFoundException e) {
-			System.err.println("File with " + inputFileName + "name does not exist");
+			System.err.println("File with " + inputFileName + " name does not exist");
 		}
 	}
 }

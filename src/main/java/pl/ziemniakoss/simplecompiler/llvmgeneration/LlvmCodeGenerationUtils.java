@@ -147,6 +147,14 @@ public class LlvmCodeGenerationUtils {
 		return getContextKey(ctx) + "key";
 	}
 
+	public  static String  getStartOfWhileLoopLabel(SimpleGrammarParser.WhileLoopContext ctx) {
+		return getContextKey(ctx) + "-start";
+	}
+
+	public static String getEndOfWhileLoopLabel(SimpleGrammarParser.WhileLoopContext ctx) {
+		return getContextKey(ctx) + "end";
+	}
+
 	public static void replaceAllPlaceholdersInCodeWithValue(LlvmCodeGeneratorState state, String placeholder, String value) {
 		int startIndexOfPlaceholder = state.getLlvmCode().indexOf(placeholder);
 		while (startIndexOfPlaceholder != -1) {

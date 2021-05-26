@@ -4,8 +4,7 @@ import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
 
 import java.util.HashMap;
 
-import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.getContextKey;
-import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.getEndOfConditionalBlockKey;
+import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.*;
 
 public class EnterCodeBlockHandler implements IEnterContextHandler<SimpleGrammarParser.CodeBlockContext> {
 	@Override
@@ -36,8 +35,9 @@ public class EnterCodeBlockHandler implements IEnterContextHandler<SimpleGrammar
 				labelToJumpIfConditionIsFalse = getContextKey(conditionalStatement.elseIfStatement(indexInElseIfsList + 1));
 			}
 			handleBeggingOfIfOrElseIfBlock(state, castedParent.valueComparison(), labelToJumpIfConditionIsFalse);
-		} else if(ctx.parent instanceof  SimpleGrammarParser.ElseStatementContext) {
-
+		} else if(ctx.parent instanceof SimpleGrammarParser.WhileLoopContext) {
+			var whileLookContext = ((SimpleGrammarParser.WhileLoopContext) ctx.parent);
+			handleBeggingOfIfOrElseIfBlock(state, whileLookContext.valueComparison(), getEndOfWhileLoopLabel(whileLookContext));
 		}
 	}
 

@@ -68,6 +68,16 @@ public interface SimpleGrammarListener extends ParseTreeListener {
 	 */
 	void exitCommand(SimpleGrammarParser.CommandContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SimpleGrammarParser#whileLoop}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileLoop(SimpleGrammarParser.WhileLoopContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SimpleGrammarParser#whileLoop}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileLoop(SimpleGrammarParser.WhileLoopContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SimpleGrammarParser#conditionalStatement}.
 	 * @param ctx the parse tree
 	 */

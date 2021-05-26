@@ -45,7 +45,10 @@ command
 	| varAssigment
 	| functionCall CommandTerminator
 	| returnStatement
-	| conditionalStatement;
+	| conditionalStatement
+	| whileLoop;
+
+whileLoop: While LBracket valueComparison RBracket codeBlock;
 
 conditionalStatement: ifStatement elseIfStatement* elseStatement?;
 

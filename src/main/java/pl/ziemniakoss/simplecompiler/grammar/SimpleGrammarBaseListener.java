@@ -88,6 +88,18 @@ public class SimpleGrammarBaseListener implements SimpleGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWhileLoop(SimpleGrammarParser.WhileLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhileLoop(SimpleGrammarParser.WhileLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
