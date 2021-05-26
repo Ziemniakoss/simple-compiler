@@ -20,6 +20,17 @@ fun int testConditionalsStatements() {
 	writeInt(5);
 }
 
+fun int testWhileLoop(int n) {
+	var int i = 0;
+	while(i <= n) {
+		writeInt(i);
+		i = i 1 +
+	}
+}
 fun int main() {
 	testConditionalsStatements();
+
+	writeReal(100);
+
+	testWhileLoop(10);
 }

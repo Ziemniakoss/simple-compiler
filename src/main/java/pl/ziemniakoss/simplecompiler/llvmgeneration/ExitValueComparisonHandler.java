@@ -60,4 +60,5 @@ public class ExitValueComparisonHandler implements IExitContextHandler<SimpleGra
 			.append(secondOperandOperationNumber);
 		return  state.nextOperationIndex++;
 	}
+
 }

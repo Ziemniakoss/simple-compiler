@@ -64,6 +64,16 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	}
 
 	@Override
+	public void exitWhileLoop(SimpleGrammarParser.WhileLoopContext ctx) {
+		new ExitWhileLoopContextHandler().handle(state, ctx);
+	}
+
+	@Override
+	public void enterWhileLoop(SimpleGrammarParser.WhileLoopContext ctx) {
+		new EnterWhileLoopHandler().handle(state, ctx);
+	}
+
+	@Override
 	public void enterElseIfStatement(SimpleGrammarParser.ElseIfStatementContext ctx) {
 		new EnterElseIfStatementHandler().handle(state, ctx);
 	}
