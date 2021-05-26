@@ -1,8 +1,10 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.enterHandlers;
 
 import pl.ziemniakoss.simplecompiler.Variable;
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IEnterContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 public class EnterVarDeclarationHandler implements IEnterContextHandler<SimpleGrammarParser.VarDeclarationContext> {
 	@Override
@@ -12,8 +14,7 @@ public class EnterVarDeclarationHandler implements IEnterContextHandler<SimpleGr
 		if (state.isVariableDefined(variableName)) {
 			throw new RuntimeException("Variable \"" + variableName + "\" already defined");
 		}
-		state.getLlvmCode().append('\n')
-			.append("\t".repeat(state.indent))
+		state.newLineAndIdent()
 			.append('%')
 			.append(state.nextOperationIndex)
 			.append(" = alloca ")

@@ -98,4 +98,12 @@ public class LlvmCodeGeneratorState {
 	public void setLabel(String labelName, int operationNumber) {
 		labelsStack.peek().put(labelName, operationNumber);
 	}
+
+	public StringBuilder newLineAndIdent() {
+		this.getLlvmCode().append('\n');
+		for (int i = 0; i < indent; i++) {
+			this.getLlvmCode().append('\t');
+		}
+		return this.getLlvmCode();
+	}
 }

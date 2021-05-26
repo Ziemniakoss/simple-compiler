@@ -1,6 +1,9 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IExitContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.getEndOfWhileLoopLabel;
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.getStartOfWhileLoopLabel;
@@ -8,8 +11,7 @@ import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUti
 public class ExitWhileLoopContextHandler implements IExitContextHandler<SimpleGrammarParser.WhileLoopContext> {
 	@Override
 	public void handle(LlvmCodeGeneratorState state, SimpleGrammarParser.WhileLoopContext ctx) {
-		state.getLlvmCode().append('\n')
-			.append("\t".repeat(state.indent + 1))
+		state.newLineAndIdent().append('\t')
 			.append("br label ")
 			.append(getStartOfWhileLoopLabel(ctx))
 			.append('\n')

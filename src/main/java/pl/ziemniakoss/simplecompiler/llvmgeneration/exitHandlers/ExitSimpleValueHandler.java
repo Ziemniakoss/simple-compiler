@@ -1,8 +1,10 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.Function;
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IEnterContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.genererateLlvmCodeForFunctionCall;
 
@@ -19,9 +21,8 @@ public class ExitSimpleValueHandler implements IEnterContextHandler<SimpleGramma
 					.append(", ")
 					.append(usedVariable.getType().toString())
 					.append("* %")
-					.append(usedVariable.getRegisterWithValue())
-					.append('\n')
-					.append("\t".repeat(state.indent));
+					.append(usedVariable.getRegisterWithValue());
+				state.newLineAndIdent();
 				state.getContextToOperationWithResult().put(ctx, state.nextOperationIndex);
 				state.getOperationIndexToStoredValueType().put(state.nextOperationIndex++, usedVariable.getType());
 
@@ -34,9 +35,8 @@ public class ExitSimpleValueHandler implements IEnterContextHandler<SimpleGramma
 			state.getLlvmCode().append('%')
 				.append(state.nextOperationIndex)
 				.append(" = alloca ")
-				.append(variableType.toString())
-				.append("\n")
-				.append("\t".repeat(state.indent));
+				.append(variableType.toString());
+			state.newLineAndIdent();
 
 			state.getLlvmCode().append("store ")
 				.append(variableType.toString())
@@ -44,9 +44,8 @@ public class ExitSimpleValueHandler implements IEnterContextHandler<SimpleGramma
 				.append(valueAsString)
 				.append(", ").append(variableType.toString())
 				.append("*  %")
-				.append(state.nextOperationIndex)
-				.append('\n')
-				.append("\t".repeat(state.indent));
+				.append(state.nextOperationIndex);
+			state.newLineAndIdent();
 
 			state.getLlvmCode().append('%')
 				.append(state.nextOperationIndex + 1)
@@ -55,9 +54,8 @@ public class ExitSimpleValueHandler implements IEnterContextHandler<SimpleGramma
 				.append(", ")
 				.append(variableType.toString())
 				.append("* %")
-				.append(state.nextOperationIndex)
-				.append('\n')
-				.append("\t".repeat(state.indent));
+				.append(state.nextOperationIndex);
+			state.newLineAndIdent();
 			state.getContextToOperationWithResult().put(ctx, ++state.nextOperationIndex);
 			state.getOperationIndexToStoredValueType().put(state.nextOperationIndex++, variableType);
 		} else {

@@ -1,8 +1,10 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.RpnOperationType;
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IExitContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import java.util.Stack;
 
@@ -63,7 +65,7 @@ public class ExitValueHandler implements IExitContextHandler<SimpleGrammarParser
 			// Cast to real needed
 			if (firstOperandType != VariableType.REAL) {
 				firstOperandIndex = generateCastingLlvmCode(state, firstOperandIndex, firstOperandType, VariableType.REAL);
-			} else if (secondOperandType != VariableType.REAL) {
+			} else {
 				secondOperandIndex = generateCastingLlvmCode(state, secondOperandIndex, secondOperandType, VariableType.REAL);
 			}
 			operationExecutedOnType = VariableType.REAL;
@@ -100,9 +102,8 @@ public class ExitValueHandler implements IExitContextHandler<SimpleGrammarParser
 			.append(" %")
 			.append(firstOperand)
 			.append(", %")
-			.append(secondOperand)
-			.append('\n')
-			.append("\t".repeat(state.indent));
+			.append(secondOperand);
+		state.newLineAndIdent();
 		return state.nextOperationIndex++;
 	}
 }
