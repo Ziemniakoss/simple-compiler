@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.ziemniakoss.simplecompiler.EnterElseIfStatementHandler;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarBaseListener;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.enterHandlers.*;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers.*;
 
 public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	private final ParseTree parseTree;
@@ -116,11 +118,6 @@ public class LLVMCodeGenerator extends SimpleGrammarBaseListener {
 	@Override
 	public void exitValueComparison(SimpleGrammarParser.ValueComparisonContext ctx) {
 		new ExitValueComparisonHandler().handle(state, ctx);
-	}
-
-	@Override
-	public void enterConditionalStatement(SimpleGrammarParser.ConditionalStatementContext ctx) {
-		new EnterConditionalStatementHandler().handle(state, ctx);
 	}
 
 	@Override

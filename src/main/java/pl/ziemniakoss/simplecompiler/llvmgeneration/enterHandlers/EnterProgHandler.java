@@ -1,6 +1,8 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.enterHandlers;
 
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IEnterContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class EnterProgHandler implements IEnterContextHandler<SimpleGrammarParse
 					.append('\n');
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Could't load IO library");
+			throw new RuntimeException("Couldn't load IO library");
 		}
 	}
 }

@@ -1,7 +1,11 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.ComparisonType;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IExitContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.*;
 
@@ -43,9 +47,7 @@ public class ExitValueComparisonHandler implements IExitContextHandler<SimpleGra
 		LlvmCodeGeneratorState state, ComparisonType comparisonType, VariableType variableType,
 		int firstOperandOperationNumber, int secondOperandOperationNumber
 	) {
-		state.getLlvmCode()
-			.append('\n')
-			.append("\t".repeat(state.indent))
+		state.newLineAndIdent()
 			.append('%')
 			.append(state.nextOperationIndex)
 			.append(" = ")

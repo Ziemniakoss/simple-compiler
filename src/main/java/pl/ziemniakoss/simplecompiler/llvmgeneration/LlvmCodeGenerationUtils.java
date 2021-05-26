@@ -162,10 +162,4 @@ public class LlvmCodeGenerationUtils {
 			startIndexOfPlaceholder = state.getLlvmCode().indexOf(placeholder);
 		}
 	}
-
-	public static void replaceValueComparisonPlaceholders(LlvmCodeGeneratorState state, SimpleGrammarParser.ValueComparisonContext ctx) {
-		final var valueComparisonPlaceholder = getContextKey(ctx);
-		final var replacement = "%" + state.getContextToOperationWithResult().get(ctx);
-		replaceAllPlaceholdersInCodeWithValue(state, valueComparisonPlaceholder, replacement);
-	}
 }

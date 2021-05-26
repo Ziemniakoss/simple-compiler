@@ -1,6 +1,8 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.enterHandlers;
 
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IEnterContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import java.util.HashMap;
 
@@ -9,16 +11,15 @@ import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUti
 public class EnterCodeBlockHandler implements IEnterContextHandler<SimpleGrammarParser.CodeBlockContext> {
 	@Override
 	public void handle(LlvmCodeGeneratorState state, SimpleGrammarParser.CodeBlockContext ctx) {
-		state.getLlvmCode().append("\t".repeat(state.indent++));
-		state.getLlvmCode().append('\n');
+		state.indent++;
 		state.getVariableContexts().push(new HashMap<>());
-		if(ctx.parent instanceof SimpleGrammarParser.IfStatementContext) {
+		if (ctx.parent instanceof SimpleGrammarParser.IfStatementContext) {
 			var castedParent = (SimpleGrammarParser.IfStatementContext) ctx.parent;
 			var conditionalStatement = (SimpleGrammarParser.ConditionalStatementContext) castedParent.parent;
 			String labelToJumpIfConditionIsFalse;
-			if(conditionalStatement.elseIfStatement().size() > 0) {
+			if (conditionalStatement.elseIfStatement().size() > 0) {
 				labelToJumpIfConditionIsFalse = getContextKey(conditionalStatement.elseIfStatement(0));
-			} else if(conditionalStatement.elseStatement() != null) {
+			} else if (conditionalStatement.elseStatement() != null) {
 				labelToJumpIfConditionIsFalse = getContextKey(conditionalStatement.elseStatement());
 			} else {
 				labelToJumpIfConditionIsFalse = getEndOfConditionalBlockKey(conditionalStatement);
@@ -45,8 +46,7 @@ public class EnterCodeBlockHandler implements IEnterContextHandler<SimpleGrammar
 		LlvmCodeGeneratorState state, SimpleGrammarParser.ValueComparisonContext valueComparisonContext,
 		String labelToJumpIfConditionIsFalse
 	) {
-		state.getLlvmCode().append('\n')
-			.append("\t".repeat(state.indent))
+		state.newLineAndIdent()
 			.append("br i1 ")
 			.append(getContextKey(valueComparisonContext))
 			.append(", label %")

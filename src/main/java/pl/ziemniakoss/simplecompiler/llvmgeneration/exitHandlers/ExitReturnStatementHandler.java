@@ -1,7 +1,9 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.VariableType;
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IExitContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.generateCastingLlvmCode;
 
@@ -16,9 +18,8 @@ public class ExitReturnStatementHandler implements IExitContextHandler<SimpleGra
 		state.getLlvmCode().append("ret ")
 			.append(state.getCurrentlyDefinedFunctionReturnType())
 			.append(" %")
-			.append(operationWithReturnedValue)
-			.append('\n')
-			.append("\t".repeat(state.indent))
+			.append(operationWithReturnedValue);
+		state.newLineAndIdent()
 			.append("unreachable")
 			.append('\n');
 		state.nextOperationIndex += 2;

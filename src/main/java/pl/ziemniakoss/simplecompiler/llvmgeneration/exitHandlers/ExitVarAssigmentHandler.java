@@ -1,6 +1,8 @@
-package pl.ziemniakoss.simplecompiler.llvmgeneration;
+package pl.ziemniakoss.simplecompiler.llvmgeneration.exitHandlers;
 
 import pl.ziemniakoss.simplecompiler.grammar.SimpleGrammarParser;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.IExitContextHandler;
+import pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGeneratorState;
 
 import static pl.ziemniakoss.simplecompiler.llvmgeneration.LlvmCodeGenerationUtils.generateCastingLlvmCode;
 
@@ -14,8 +16,7 @@ public class ExitVarAssigmentHandler implements IExitContextHandler<SimpleGramma
 		if (variable.getType() != assignedValueType) {
 			operationWithValue = generateCastingLlvmCode(state, operationWithValue, assignedValueType, variable.getType());
 		}
-		state.getLlvmCode().append('\n')
-			.append("\t".repeat(state.indent))
+		state.newLineAndIdent()
 			.append("store ")
 			.append(variable.getType())
 			.append(" %")
